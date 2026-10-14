@@ -120,23 +120,25 @@ Tài liệu kiểm thử nghiệm thu hệ thống Trợ lý tra cứu chính s�
 
 ## 3. TÌNH HUỐNG SẢN PHẨM CHƯA XỬ LÝ TỐT / THẤT BẠI (PRODUCT LIMITATION)
 
-### Tình huống 7: Truy vấn điểm mốc thời gian lịch sử & Xung đột phiên bản (Temporal Query / Time-Travel Failure)
+### Tình huống 7: Truy vấn phức hợp đa chủ đề liên tài liệu (Composite Multi-Topic Query — Giới hạn phạm vi MVP)
 * **Mã kiểm thử**: `TC-M2-07`
 * **Người hỏi giả lập**: `U01` — Alice (AlphaPay)
-* **Câu hỏi**: *"Năm 2025 (năm ngoái) chính sách nghỉ phép của AlphaPay quy định tôi được bao nhiêu ngày phép?"*
+* **Câu hỏi**: *"Nếu tôi muốn nghỉ phép kết hợp làm việc tại nhà trong cùng một tuần thì quy trình quản lý phê duyệt như thế nào?"*
 * **Kỳ vọng**: 
   - Trạng thái mong muốn: `ANSWER`.
-  - Nội dung suy luận lịch sử: Hệ thống nhận diện câu hỏi hướng tới năm 2025, tra cứu phiên bản `v2` của `ALPHA-LEAVE` (áp dụng từ 2025-01-01 đến 2026-01-01) và trả lời đúng con số **13 ngày phép**.
-  - Trích dẫn: `ALPHA-LEAVE` phiên bản `v2`.
+  - Nội dung tổng hợp liên tài liệu: Hệ thống nhận diện câu hỏi ghép gồm 3 khía cạnh chính sách và tổng hợp thông tin từ 3 tài liệu:
+    1. Chế độ Nghỉ phép năm (`ALPHA-LEAVE`).
+    2. Định mức Làm việc tại nhà tối đa 2 ngày/tuần (`ALPHA-WFH-POLICY`).
+    3. Quy trình phê duyệt của Quản lý trực tiếp (`ALPHA-MANAGER-LEAVE-APPROVAL`).
 * **Kết quả thực tế**: 
-  - Trạng thái: `ANSWER` (nhưng trả lời sai mốc thời gian lịch sử).
+  - Trạng thái: `ANSWER` (nhưng câu trả lời bị phiến diện, thiếu hụt nghiêm trọng).
   - Câu trả lời: *"Theo chính sách nghỉ phép của AlphaPay, nhân viên chính thức có 15 ngày nghỉ phép năm có hưởng lương [1]."*
-  - Trích dẫn: `ALPHA-LEAVE` phiên bản `v3` (phiên bản năm 2026 hiện hành).
+  - Trích dẫn: Chỉ trích dẫn duy nhất `ALPHA-LEAVE` (Chính sách nghỉ phép). Toàn bộ nội dung về WFH và quy trình phê duyệt của Quản lý bị bỏ sót.
 * **Đạt / Chưa đạt**: **Chưa đạt (FAIL)**
 * **Điều học được**: 
-  - **Nguyên nhân cốt lõi**: Bộ lọc quản trị phiên bản (`current_versions`) đang sử dụng ngày chạy thực tế của hệ thống (`today = date.today()` — năm 2026) làm mốc thời gian mặc định để lọc tài liệu hiệu lực. Do đó, các phiên bản cũ như `v2` (2025: 13 ngày) bị tự động loại bỏ (`OBSOLETE`) ngay từ tầng tiền truy xuất. LLM chỉ nhận được bản `v3` (2026: 15 ngày) nên trả lời sai so với mốc năm 2025 của câu hỏi.
-  - **Ranh giới bài toán**: Nếu bỏ bộ lọc thời gian để RAG lấy "top-k chunk tự do", cả `v1`, `v2`, `v3` sẽ cùng lọt vào context, khiến LLM bị nhiễu loạn giữa các quy định cũ - mới và sinh ảo giác.
-  - **Hướng khắc phục**: Hệ thống cần bổ sung tầng **Trích xuất thực thể thời gian (Temporal Entity Parser)** từ câu hỏi người dùng (ví dụ: *"năm 2025"* ➔ tự động gán `query_date = 2025-06-01`) trước khi đưa qua bộ lọc phiên bản, thay vì cố định ngày chạy của hệ thống.
+  - **Nguyên nhân cốt lõi**: **Thiết kế kiến trúc MVP chưa bao gồm cơ chế Phân rã câu hỏi (Query Decomposition) hoặc Bộ định tuyến đa nhánh (Multi-Topic Routing)**. Pipeline tuần tự hiện tại của MVP nhận diện ý định đầu tiên (`leave_days`) và lọc tài liệu ứng viên cứng theo duy nhất một chủ đề đó. Hệ thống tự động loại bỏ các tài liệu thuộc chủ đề `wfh_days` và `leave_approval` trước khi đưa vào context của LLM.
+  - **Đánh đổi thiết kế (Intentional Trade-off)**: Đây là sự đánh đổi có chủ đích trong giai đoạn MVP: việc giới hạn đơn chủ đề giúp kiểm soát quyền truy cập chặt chẽ tuyệt đối, ngăn chặn hoàn toàn nguy cơ rò rỉ chéo dữ liệu và tối ưu tốc độ phản hồi.
+  - **Lộ trình nâng cấp**: Để xử lý tốt các câu hỏi phức hợp cross-policy, giai đoạn tiếp theo cần bổ sung tầng **Query Decomposition Planner** (phân rã câu hỏi phức hợp thành các câu hỏi con đơn lẻ) kết hợp với **Multi-Topic Aggregator** để truy xuất độc lập và tổng hợp câu trả lời an toàn.
 
 ---
 
@@ -150,7 +152,7 @@ Tài liệu kiểm thử nghiệm thu hệ thống Trợ lý tra cứu chính s�
 | **TC-M2-04** | Khó / Mâu thuẫn | U03 hỏi số ngày WFH | CONFLICT | CONFLICT | **Đạt** | Phát hiện mâu thuẫn chính sách, hiển thị cả 2 nguồn. |
 | **TC-M2-05** | Dữ liệu không rõ | U01 hỏi WFH ngày thứ Sáu | ABSTAIN | ABSTAIN | **Đạt** | Từ chối trả lời khi văn bản không nêu ngày cụ thể. |
 | **TC-M2-06** | Làm tốt (Paraphrase) | U01 hỏi *"nghỉ hằng năm"* | ANSWER | ANSWER | **Đạt** | Đã mở rộng intent nhận diện từ đồng nghĩa tự nhiên. |
-| **TC-M2-07** | Chưa tốt / Thất bại | U01 hỏi ngày phép năm 2025 | 13 ngày (v2) | 15 ngày (v3) | **Chưa đạt** | Bộ lọc phiên bản cố định theo ngày hiện tại, chưa hỗ trợ mốc lịch sử. |
+| **TC-M2-07** | Chưa tốt / Giới hạn | U01 hỏi nghỉ phép + WFH + duyệt | Tổng hợp 3 nguồn | Chỉ ra 1 nguồn phép | **Chưa đạt** | Chưa có Query Decomposition và Multi-Topic Routing. |
 
 - **Tổng số tình huống**: 07 tình huống (6 Đạt, 1 Chưa đạt).
 - **Tỷ lệ Đạt**: 6/7 tình huống (**85.7%**).

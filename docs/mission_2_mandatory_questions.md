@@ -52,19 +52,18 @@ So với bản thiết kế kiến trúc lý thuyết ở Mission 1, tôi đã t
 #### 1. Trường hợp dễ gây sai lệch nhất hiện tại:
 Có 2 trường hợp dễ khiến hệ thống trả lời sai hoặc sử dụng sai tri thức nhất:
 
-1. **Trường hợp 1: Truy vấn mốc thời gian lịch sử & Điểm mù chuyển tiếp phiên bản (Temporal Query / Version Transition — Case TC-M2-07)**:
-   - *Hiện tượng*: Người dùng hỏi câu hỏi gắn liền với mốc thời gian quá khứ: *"Năm 2025 (năm ngoái) chính sách nghỉ phép của AlphaPay quy định tôi được bao nhiêu ngày phép?"*.
-   - *Nguy cơ*: Trong cơ chế quản trị phiên bản của hệ thống, bộ lọc `current_versions` sử dụng ngày hiện tại của hệ thống (`today = date.today()` — năm 2026) làm mốc thời gian mặc định để lọc tài liệu hiệu lực. Do đó, các phiên bản cũ như `v2` (áp dụng năm 2025: 13 ngày) bị tự động gạt bỏ vì coi là đã hết hạn (`OBSOLETE`). Hệ thống chỉ đưa phiên bản `v3` (năm 2026: 15 ngày) vào context, dẫn đến việc LLM trả lời sai mốc thời gian mà người dùng đang tra cứu.
-   - *Tính chất rủi ro*: Nếu bỏ bộ lọc thời gian để RAG lấy "top-k chunk tự do", cả `v1`, `v2`, `v3` sẽ cùng lọt vào context, khiến LLM bị nhiễu loạn giữa các chính sách cũ - mới và sinh ảo giác trích dẫn nhầm văn bản hết hiệu lực.
+1. **Trường hợp 1: Truy vấn phức hợp đa chủ đề liên tài liệu (Composite Multi-Topic Query — Case TC-M2-07)**:
+   - *Hiện tượng*: Người dùng đặt câu hỏi ghép liên quan đến nhiều chính sách cùng lúc: *"Nếu tôi muốn nghỉ phép kết hợp làm việc tại nhà trong cùng một tuần thì quy trình quản lý phê duyệt như thế nào?"*.
+   - *Nguy cơ*: Trong thiết kế MVP, hệ thống được cấu trúc dạng Pipeline tuần tự đơn chủ đề (Single-Intent Pipeline). Thiết kế này **chưa bao gồm cơ chế Phân rã câu hỏi (Query Decomposition) hoặc Bộ định tuyến đa nhánh (Multi-Topic Routing)**. Bộ nhận diện ý định gán nhãn câu hỏi vào chủ đề đầu tiên tìm thấy (`leave_days`) và lọc cứng tài liệu theo chủ đề đó, dẫn đến việc loại bỏ hoàn toàn các tài liệu về WFH (`wfh_days`) và quy trình phê duyệt (`leave_approval`). Câu trả lời trả về chỉ nói về số ngày phép và bỏ sót hoàn toàn 2 vế còn lại.
 2. **Trường hợp 2: Sai lệch từ Metadata tài liệu (Metadata Corruption / Outdated Tagging)**:
    - *Hiện tượng*: Một tài liệu thực tế đã bị sửa đổi hoặc hết hạn nhưng người quản trị quên không cập nhật trường `effective_to` hoặc gắn nhầm thẻ phòng ban/công ty.
    - *Nguy cơ*: Vì hệ thống tin tưởng tuyệt đối vào metadata để lọc quyền, metadata sai sẽ dẫn đến việc cấp phát sai văn bản vào context của LLM.
 
-*(Ghi chú: Trường hợp từ đồng nghĩa tự nhiên ở test case `T08` — "Số ngày nghỉ hằng năm" — trước đó từng bị từ chối do bộ lọc từ khóa cứng, nay đã được tôi giải quyết triệt để bằng việc mở rộng tập từ khóa ngữ nghĩa và bổ sung cơ chế fallback tự phục hồi).*
+*(Ghi chú: Điểm nghẽn từ đồng nghĩa ở test case `T08` — "Số ngày nghỉ hằng năm" — và khả năng bóc tách mốc thời gian lịch sử như năm 2024, 2025 đều đã được tôi giải quyết hoàn thiện trong mã nguồn bằng bộ nhận diện intent mở rộng và Temporal Entity Parser).*
 
 #### 2. Cách phát hiện rủi ro:
-- **Xây dựng bộ kiểm thử đối kháng đa bối cảnh (Adversarial Test Suite)**: Tôi xây dựng 60 test cases giả lập (`data/synthetic/tests/`) và bộ 8 test cases chuyên biệt (`evaluation/test_cases.json`) với đầy đủ các bẫy: câu hỏi bẫy bối cảnh công ty, bẫy quyền hạn, bẫy bản nháp (draft), câu hỏi mập mờ, câu hỏi dùng từ đồng nghĩa và câu hỏi truy vấn mốc lịch sử phiên bản.
-- **Quan sát kết quả thực nghiệm**: Khi đối chiếu câu hỏi mốc thời gian năm 2025, hệ thống tự động lọc bỏ bản `v2` (13 ngày) và chỉ cấp bản `v3` (15 ngày), dẫn đến câu trả lời bị lệch thời điểm hiệu lực.
+- **Xây dựng bộ kiểm thử đối kháng đa bối cảnh (Adversarial Test Suite)**: Tôi xây dựng 60 test cases giả lập (`data/synthetic/tests/`) và bộ 8 test cases chuyên biệt (`evaluation/test_cases.json`) với đầy đủ các bẫy: câu hỏi bẫy bối cảnh công ty, bẫy quyền hạn, bẫy bản nháp (draft), câu hỏi mập mờ, câu hỏi dùng từ đồng nghĩa và câu hỏi phức hợp đa chủ đề.
+- **Quan sát kết quả thực nghiệm**: Khi đối chiếu câu hỏi ghép (Nghỉ phép + WFH + Phê duyệt quản lý), hệ thống chỉ lọc ra tài liệu `ALPHA-LEAVE` và bỏ qua `ALPHA-WFH-POLICY` cùng `ALPHA-MANAGER-LEAVE-APPROVAL`.
 
 #### 3. Cách kiểm soát rủi ro trong hệ thống:
 Hệ thống áp dụng nguyên tắc **"Thà từ chối trung thực (ABSTAIN) còn hơn trả lời sai (Hallucination)"** thông qua 4 chốt chặn kiểm soát:
@@ -72,4 +71,4 @@ Hệ thống áp dụng nguyên tắc **"Thà từ chối trung thực (ABSTAIN)
 1. **Nguyên tắc "Fail-Safe Default" (Mặc định an toàn)**: Khi không chắc chắn về chủ đề hoặc điểm tương đồng ngữ nghĩa dưới ngưỡng an toàn, hệ thống tự động rơi về trạng thái `ABSTAIN` kèm giải thích lịch sự, tuyệt đối không cho LLM "đoán mò".
 2. **Chốt chặn Kiểm định Trích dẫn (Strict Citation Assertion)**: Tại [src/service.py](file:///d:/KieuQuy/Documents/Appota/src/service.py#L69-L75), hệ thống dùng mã kiểm tra nghiêm ngặt: Nếu câu trả lời sinh ra không có trích dẫn, hoặc đoạn trích dẫn không khớp 100% từng ký tự với văn bản nguồn được cấp phép, câu trả lời sẽ bị hủy bỏ ngay lập tức.
 3. **Cơ chế ghi nhận Trace kiểm toán (Audit Logging)**: Mỗi truy vấn đều sinh ra một bản ghi audit trace ẩn chứa đầy đủ: danh sách tài liệu bị loại vì quyền, danh sách tài liệu bị loại vì hết hạn, quyết định của resolver và độ trễ xử lý. Nhờ đó, đội ngũ kỹ thuật có thể kiểm tra chính xác nguyên nhân vì sao hệ thống từ chối hoặc trả lời.
-4. **Lộ trình nâng cấp**: Để giải quyết triệt để rủi ro thời gian, hệ thống cần bổ sung tầng **Trích xuất thực thể thời gian (Temporal Entity Parser)** từ câu hỏi người dùng (ví dụ: *"năm 2025"* ➔ tự động gán `query_date = 2025-06-01`) trước khi đưa qua bộ lọc phiên bản, thay vì cố định ngày chạy của hệ thống.
+4. **Lộ trình nâng cấp**: Để giải quyết triệt để các câu hỏi phức hợp cross-policy, giai đoạn tiếp theo cần bổ sung tầng **Query Decomposition Planner** (phân rã câu hỏi phức hợp thành các câu hỏi con đơn lẻ) kết hợp với **Multi-Topic Aggregator** để truy xuất độc lập và tổng hợp câu trả lời an toàn.

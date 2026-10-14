@@ -13,8 +13,22 @@ from .retrieval import detect_intent, retrieve
 from .store import get_user, load_seed
 
 
+import re
+
+
 def list_demo_users() -> list[dict]:
     return [dict(user) for user in load_seed()["users"] if user["active"]]
+
+
+def _detect_query_date(question: str, default_date: date) -> date:
+    q = question.lower()
+    match = re.search(r"\b(20\d\d)\b", q)
+    if match:
+        year = int(match.group(1))
+        return date(year, 6, 1)
+    if "nam ngoai" in q or "last year" in q:
+        return date(default_date.year - 1, 6, 1)
+    return default_date
 
 
 def answer_question(user_id: str, question: str, *, query_date: date | None = None,
@@ -26,7 +40,8 @@ def answer_question(user_id: str, question: str, *, query_date: date | None = No
     dataset = seed if seed is not None else load_seed()
     user = get_user(user_id, dataset)
     topic, weekday_specific = detect_intent(question)
-    today = query_date or date.today()
+    base_date = query_date or date.today()
+    today = _detect_query_date(question, base_date) if query_date is None else query_date
     trace = {"request_id": str(uuid4()), "user_id": user_id, "query_mode": "SELF_CONTEXT",
              "user_context": {k: user[k] for k in ("company", "department", "team", "role", "level")},
              "total_document_count": len(dataset["documents"]), "topic": topic}

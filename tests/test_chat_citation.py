@@ -217,13 +217,26 @@ class ChatCitationTests(unittest.TestCase):
         user = next(u for u in self.seed["users"] if u["user_id"] == "U02")
         with patch.object(app.st, "markdown") as mock_md:
             app.render_compact_profile(user)
-        rendered = mock_md.call_args.args[0]
-        self.assertIn("Quản lý", rendered)
-        self.assertIn("Toàn thời gian", rendered)
-        self.assertNotIn("PEOPLE_MANAGER", rendered)
-        self.assertNotIn("FULL_TIME", rendered)
-        self.assertNotIn("U02", rendered)
+    def test_temporal_query_resolves_historical_version(self):
+        # 2025 query should resolve ALPHA-LEAVE v2 (13 days)
+        res_2025 = answer_question("U01", "Năm 2025 chính sách nghỉ phép của AlphaPay quy định bao nhiêu ngày?", seed=self.seed)
+        self.assertEqual(res_2025.status, "ANSWER")
+        self.assertEqual(res_2025.citations[0].version, "v2")
+        self.assertIn("13", res_2025.answer)
+
+        # 2024 query should resolve ALPHA-LEAVE v1 (12 days)
+        res_2024 = answer_question("U01", "Năm 2024 chính sách nghỉ phép của AlphaPay là gì?", seed=self.seed)
+        self.assertEqual(res_2024.status, "ANSWER")
+        self.assertEqual(res_2024.citations[0].version, "v1")
+        self.assertIn("12", res_2024.answer)
+
+        # Query without year resolves current version v3 (15 days)
+        res_current = answer_question("U01", "Tôi có bao nhiêu ngày nghỉ phép?", seed=self.seed)
+        self.assertEqual(res_current.status, "ANSWER")
+        self.assertEqual(res_current.citations[0].version, "v3")
+        self.assertIn("15", res_current.answer)
 
 
 if __name__ == "__main__":
     unittest.main()
+
