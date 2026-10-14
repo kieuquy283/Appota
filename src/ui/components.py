@@ -107,8 +107,13 @@ def render_citation_cards(citations: list):
         title = getattr(c, "title", c.get("title") if isinstance(c, dict) else "")
         ver = getattr(c, "version", c.get("version") if isinstance(c, dict) else "")
         sec = getattr(c, "section", c.get("section") if isinstance(c, dict) else "")
+        excerpt = getattr(c, "excerpt", c.get("excerpt") if isinstance(c, dict) else "")
 
         sec_part = f"<span>· Mục: <em>{html.escape(sec)}</em></span>" if sec else ""
+        excerpt_part = (
+            f'<blockquote class="kg-citation-excerpt">“{html.escape(excerpt)}”</blockquote>'
+            if excerpt else ""
+        )
         card_item = (
             f'<div class="kg-citation-card">'
             f'<div class="kg-citation-num">[{idx}]</div>'
@@ -119,6 +124,7 @@ def render_citation_cards(citations: list):
             f'<span>· Phiên bản: <strong>{html.escape(ver)}</strong></span>'
             f'{sec_part}'
             f'</div>'
+            f'{excerpt_part}'
             f'</div>'
             f'</div>'
         )
@@ -200,9 +206,6 @@ def render_audit_trace_expander(trace: dict):
             f"Quyết định thẩm quyền: **{trace.get('resolver_decision', 'N/A')}** | "
             f"Thời gian: **{trace.get('latency_ms', 0)} ms**"
         )
-
-        with st.expander("📄 Dữ liệu Trace JSON kỹ thuật", expanded=False):
-            st.json(trace)
 
 
 def render_welcome_box():

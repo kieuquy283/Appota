@@ -13,6 +13,7 @@ class Citation:
     title: str
     version: str
     section: str | None = None
+    excerpt: str | None = None
 
 
 @dataclass

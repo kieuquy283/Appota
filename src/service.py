@@ -5,6 +5,7 @@ from time import perf_counter
 from uuid import uuid4
 
 from .governance import can_read, current_versions, is_applicable, resolve_authority
+from .citations import citation_from_chunk
 from .llm import generate
 from .models import AnswerResult, Citation
 from .retrieval import detect_intent, retrieve
@@ -47,24 +48,28 @@ def answer_question(user_id: str, question: str, *, query_date: date | None = No
     trace["retrieved_versions"] = [x["version"] for x in chunks]
     decision, selected = resolve_authority(chunks)
     trace["resolver_decision"] = decision
+    documents = {d["id"]: d for d in dataset["documents"]}
+    for chunk in selected:
+        doc = documents[chunk["document_id"]]
+        if not can_read(user, doc) or not is_applicable(user, doc) or chunk not in eligible:
+            raise AssertionError("Invalid source reached citation or LLM context")
 
     if decision == "CONFLICT":
         result = AnswerResult("CONFLICT", "Có các chính sách hiện hành cùng thẩm quyền nhưng mâu thuẫn. Vui lòng hỏi chủ sở hữu chính sách.",
-                              [Citation(x["document_id"], x["title"], x["version"], x["section"]) for x in selected],
+                              [citation_from_chunk(x) for x in selected],
                               "equal_authority_conflict")
     elif decision == "INSUFFICIENT" or weekday_specific:
         result = AnswerResult("ABSTAIN", "Tài liệu hiện có chưa đủ căn cứ để trả lời câu hỏi này.",
                               reason="missing_evidence")
     else:
-        # Guard every chunk at the final boundary, independent of upstream filters.
-        documents = {d["id"]: d for d in dataset["documents"]}
-        for chunk in selected:
-            doc = documents[chunk["document_id"]]
-            if not can_read(user, doc) or not is_applicable(user, doc) or chunk not in eligible:
-                raise AssertionError("Invalid source reached LLM context")
         result = generate(question, topic, selected)
-        valid = {(x["document_id"], x["version"]) for x in selected}
-        if not result.citations or any((c.document_id, c.version) not in valid for c in result.citations):
+        valid = {(x["document_id"], x["version"]): x["content"] for x in selected}
+        if not result.citations or any(
+            (c.document_id, c.version) not in valid
+            or not c.excerpt
+            or c.excerpt not in valid[(c.document_id, c.version)]
+            for c in result.citations
+        ):
             raise ValueError("Answer contains invalid citations")
     trace.update(result.trace)
     trace["llm_context_document_ids"] = [x["document_id"] for x in selected] if result.status == "ANSWER" else []

@@ -78,13 +78,34 @@ def policy_body(title, company, department, team, section, effective, core, *, l
         f"3. {section}. {core} This rule is stated for the synthetic policy year shown in the metadata. When another company, department, or team publishes a more specific applicable policy, the reader must use the authorized policy with the correct authority and effective date. Similar wording in a handbook or FAQ is not a replacement for an approved policy.",
         "4. Request and approval. The employee submits any required request through the fictional internal workflow before relying on an approval. The responsible manager or designated owner checks eligibility, timing, and supporting records. An approval step does not change a numeric entitlement. The employee should retain the request identifier and the final decision for later review.",
         "5. Exceptions and unresolved questions. This document does not create exceptions by implication. If the rule lacks a necessary figure, deadline, location, or weekday, the answer is unknown from this source. Conflicting current documents of equal authority require owner review; a reader should not choose whichever number is more favorable. Draft and expired versions are not current instructions.",
-        "6. Records and handling. Keep the policy ID, version, and section with an approval record so the decision can be reviewed later. Restricted records are shared only with the audience named in the document registry.",
+        "6. Records and handling. Keep the policy ID, version, and section with an approval record so the decision can be reviewed later. Restricted records are shared only with the audience named in the document registry. A reviewer records the date, request category, organizational unit and decision rationale. Records are retained under the applicable fictional records schedule. If an employee changes company or employment type, the owner verifies a new entitlement before reusing an earlier approval. A cited answer must identify the operative section so an auditor can reproduce the decision.",
         f"7. Ownership and review. The fictional {company if company != '*' else 'group'} policy owner reviews this rule after organizational or legal changes and publishes a dated replacement if needed. Until then, staff should ask the owner for cases not covered here. This document includes no real Appota customer, employee, financial, or security data.",
     ]
     if long:
+        noise_topics = [
+            ("Desk booking", "Shared desks are booked through the fictional facilities calendar; a booking does not reserve equipment or change a remote-work entitlement."),
+            ("Visitor entry", "Visitors sign in at reception and are accompanied in work areas. A visit record is an access record, not a policy approval."),
+            ("Meeting rooms", "Teams release unused rooms so others can book them. A calendar invitation alone does not override capacity or safety guidance."),
+            ("Equipment labels", "Assigned laptops carry an inventory label; a lost label is reported to service desk before any replacement request is made."),
+            ("Office supplies", "Routine supplies are requested through a shared catalog. This workflow does not establish a personal allowance or reimbursement amount."),
+            ("Internal announcements", "Policy announcements include an owner and effective date. An informal chat message is not a replacement for the approved document record."),
+            ("Training records", "Staff keep proof of completed onboarding modules. The record confirms attendance, not eligibility for every system or benefit mentioned in training."),
+            ("Travel booking", "Travel requests record business purpose and destination. A booking confirmation does not determine the separate meal, hotel or taxi cap."),
+            ("Receipts", "A receipt shows an expense occurred; reimbursement still depends on the applicable company policy and an approved business purpose."),
+            ("Service requests", "Facilities requests use a ticket identifier so an owner can track closure. The ticket is not a substitute for a personnel policy."),
+            ("Shared calendars", "Team calendars help coordinate coverage and may include tentative plans. They do not prove that leave or remote work has been approved."),
+            ("Document naming", "Document names are kept stable for citation. Similar names across companies should trigger scope checks before any text is reused."),
+            ("Version review", "Reviewers archive superseded material but retain a dated reference for historical audits. Current answers use the active approved version."),
+            ("Accessibility requests", "Workers may request accessible facilities through the designated owner. This appendix does not specify monetary benefits or medical criteria."),
+            ("Feedback channel", "Readers can flag unclear wording to the policy owner. A suggested correction remains a proposal until an approved new version is issued."),
+            ("Privacy reminders", "Work records should be shared only with authorized roles. A searchable document title does not imply that its contents may be disclosed."),
+            ("Release communication", "Teams coordinate release announcements with their local owner. Draft release notes are context, not authoritative employee policy."),
+            ("Handover notes", "A handover records outstanding operational tasks and an accountable owner. It cannot create a new entitlement or exception to an approved rule."),
+            ("Archive searches", "Archive matches may have highly similar language to current policies. The effective date and status must be checked before citation."),
+        ]
         examples = [
-            f"Example {i}. A reader in a different company sees the same keywords as {title}, but the record is still scoped to {audience}. The reader must not copy an amount or operational step across companies. The reviewer checks the current effective date, approval state, and exact section before citing a source. A historical or unrelated paragraph is useful background only and must not become the operative answer."
-            for i in range(1, 5)
+            f"Appendix {i}. {heading}. {detail} This administrative note sits near the words leave, travel, expense, remote work and approval for search testing. It supplies no new numerical entitlement. A reader must verify the operative document ID, organizational scope, effective date and section before relying on a result. If this paragraph is the only retrieved evidence, ask the policy owner instead of inventing a figure."
+            for i, (heading, detail) in enumerate(noise_topics, 1)
         ]
         paragraphs.extend(examples)
     return "\n\n".join(paragraphs)
@@ -133,7 +154,7 @@ DOCUMENTS = [
         role="EMPLOYEE", employment=["FULL_TIME"], authority="GUIDELINE", section="Annual leave"),
     doc("GRP-REMOTE-GUIDE", "Group Remote Work Guideline", "wfh_days", "2 days/week",
         "Up to two remote days may be allowed, subject to a more specific company or department policy. This guideline grants no stand-alone entitlement.",
-        authority="GUIDELINE", section="Remote work"),
+        employment=["FULL_TIME"], authority="GUIDELINE", section="Remote work"),
     doc("AP-HR-LEAVE-2024", "AlphaPay Annual Leave Policy 2024", "leave_days", "12 days/year",
         "Full-time AlphaPay employees receive twelve paid annual leave days. Requests of three or more consecutive days require manager approval before the first day. HR records approved leave in the internal calendar. This historical version was replaced for the 2025 policy year.",
         company="AlphaPay", role="EMPLOYEE", employment=["FULL_TIME"], status="DEPRECATED", start="2024-01-01", end="2025-01-01", section="Annual leave"),

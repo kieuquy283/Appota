@@ -441,6 +441,18 @@ section[data-testid="stSidebar"] .block-container {
     border-radius: 4px;
 }
 
+.kg-citation-excerpt {
+    margin: 0.7rem 0 0;
+    padding: 0.55rem 0.8rem;
+    border-left: 3px solid var(--kg-primary);
+    background: rgba(59, 130, 246, 0.08);
+    border-radius: 0 6px 6px 0;
+    color: var(--kg-text-primary);
+    font-size: 0.84rem;
+    line-height: 1.55;
+    white-space: pre-line;
+}
+
 /* Quick Actions Chips Container */
 .kg-quick-actions-row {
     display: flex;

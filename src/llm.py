@@ -5,6 +5,7 @@ import os
 from urllib import request
 
 from .models import AnswerResult, Citation
+from .citations import citation_from_chunk
 
 
 def _offline_answer(topic: str, source: dict) -> str:
@@ -20,7 +21,7 @@ def _offline_answer(topic: str, source: dict) -> str:
 
 def generate(question: str, topic: str, sources: list[dict]) -> AnswerResult:
     """Generate from guarded sources; use offline extractive mode without credentials."""
-    citations = [Citation(x["document_id"], x["title"], x["version"], x["section"]) for x in sources]
+    citations = [citation_from_chunk(x) for x in sources]
     api_key = os.getenv("LLM_API_KEY")
     if not api_key:
         answer_text = _offline_answer(topic, sources[0])

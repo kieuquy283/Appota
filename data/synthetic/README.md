@@ -30,4 +30,6 @@ python -m data.synthetic.run_mvp_evaluation
 
 `tests/test_cases.json` is the golden oracle; `tests/golden_test_matrix.md` lists every case, and `tests/mission2_evaluation_template.md` is ready for observed evidence. `tests/mvp_results.json` records the offline MVP baseline. Read `DATASET_MANIFEST.md` for scope, schema, versioning and known limits.
 
+In the chat UI, a citation names the document, version and section and shows a verbatim passage from that authorized document. The underlying JSON is only the storage format; users see the passage as readable text.
+
 To add a case, update `CASES` and its `CATEGORY` entry in `build_dataset.py`, rebuild, run validation, and record the observed result. To add a policy, add a `doc(...)` entry with explicit access, applicability, status, effective date and stable section heading, then add a test that cites its ID. Do not edit generated document JSON by hand; it is reproduced from the builder.

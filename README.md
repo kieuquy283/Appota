@@ -36,7 +36,7 @@ result = answer_question("U01", "Tôi có bao nhiêu ngày nghỉ phép?")
 print(result.status, result.answer, result.citations, result.trace)
 ```
 
-UI chỉ gửi `user_id` và `question`; backend tự lấy company/department/role từ seed. `AnswerResult` có `status`, `answer`, `citations`, `reason`, `trace`, hỗ trợ `to_dict()`.
+UI chỉ gửi `user_id` và `question`; backend tự lấy company/department/role từ seed. `AnswerResult` có `status`, `answer`, `citations`, `reason`, `trace`, hỗ trợ `to_dict()`. Mỗi citation hiện tên văn bản, phiên bản, mục và một đoạn trích nguyên văn từ đúng phiên bản được phép truy cập; giao diện không hiển thị JSON kỹ thuật khi xem dẫn chứng.
 
 ## Tùy chọn provider
 

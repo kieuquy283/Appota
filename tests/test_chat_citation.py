@@ -1,6 +1,7 @@
 import html
 import unittest
 from datetime import date
+from pathlib import Path
 from unittest.mock import patch, MagicMock
 
 from src.models import AnswerResult, Citation
@@ -159,6 +160,37 @@ class ChatCitationTests(unittest.TestCase):
         """Verify inline citation [1] is attached in offline extractive answer."""
         result = answer_question("U01", "Tôi có bao nhiêu ngày nghỉ phép?", seed=self.seed)
         self.assertTrue(result.answer.endswith("[1]"))
+
+    def test_citation_quotes_exact_authorized_document_passage(self):
+        fixture = load_seed(Path("data/synthetic/seed.json"))
+        result = answer_question("U01", "Tôi có bao nhiêu ngày nghỉ phép?", seed=fixture)
+        self.assertEqual(result.status, "ANSWER")
+        self.assertEqual([c.document_id for c in result.citations], ["AP-HR-LEAVE-2026"])
+        citation = result.citations[0]
+        source = next(d for d in fixture["documents"] if d["id"] == citation.document_id)
+        version = next(v for v in source["versions"] if v["version"] == citation.version)
+        self.assertIn(citation.excerpt, version["content"])
+        self.assertIn("fifteen paid annual leave days", citation.excerpt)
+        self.assertNotIn("\"metadata\"", citation.excerpt)
+
+    def test_conflict_cites_distinct_verbatim_passages(self):
+        result = answer_question("U03", "Tôi được WFH mấy ngày?", seed=self.seed)
+        self.assertEqual(result.status, "CONFLICT")
+        for citation in result.citations:
+            source = next(d for d in self.seed["documents"] if d["id"] == citation.document_id)
+            version = next(v for v in source["versions"] if v["version"] == citation.version)
+            self.assertIn(citation.excerpt, version["content"])
+        self.assertNotEqual(result.citations[0].excerpt, result.citations[1].excerpt)
+
+    def test_citation_card_shows_escaped_document_quote(self):
+        citation = Citation("DOC-1", "Policy <One>", "v2", "4.1 Annual Leave", "Leave is <approved>.")
+        with patch.object(app.st, "markdown") as mock_md:
+            app.render_citations([citation])
+        rendered_html = mock_md.call_args[0][0]
+        self.assertIn("Policy &lt;One&gt;", rendered_html)
+        self.assertIn("Leave is &lt;approved&gt;.", rendered_html)
+        self.assertIn("4.1 Annual Leave", rendered_html)
+        self.assertNotIn("<approved>", rendered_html)
 
 
 if __name__ == "__main__":

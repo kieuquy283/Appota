@@ -24,7 +24,7 @@ Version `status` is `APPROVED`, `DEPRECATED` or `DRAFT`, matching the existing s
 - The older AlphaPay handbook summarizes 14 days of leave, while the active official 2026 leave policy gives 15. A current answer should cite the official policy.
 - Two active equal-authority AlphaPay taxi records give 500,000 and 600,000 VND per trip. Both should be cited with `CONFLICT`, with no invented resolution. CloudX Security log retention has a second equal-authority conflict.
 - Some information is deliberately absent: eyeglasses, CloudX gym benefit, a numeric sales commission rate, permitted remote weekdays, and the detailed terms of individual service contracts.
-- Similar company expense documents deliberately reuse vocabulary. Three longer stress documents (`GRP-WORKPLACE-2026`, `AP-HANDBOOK-2025`, `BG-TRAVEL-FAQ-2026`) contain roughly 1,600–1,800 words and competing keywords.
+- Similar company expense documents deliberately reuse vocabulary. Three longer stress documents (`GRP-WORKPLACE-2026`, `AP-HANDBOOK-2025`, `BG-TRAVEL-FAQ-2026`) contain roughly 2,000 words and competing keywords across varied administrative appendices.
 - Restricted traps include AlphaPay salary bands, Finance audit thresholds, Backend production access, and CloudX SEV-1 escalation. The values are fictional, but the access expectation is strict.
 
 The corpus is intentionally messy: most documents are current and clear, while the rest include older guidance, redundant text, conflicting authority, vague scope, restricted records and long irrelevant passages. The goal is to distinguish robust metadata and authorization handling from naive keyword retrieval.
