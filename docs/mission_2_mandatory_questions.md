@@ -52,9 +52,10 @@ So với bản thiết kế kiến trúc lý thuyết ở Mission 1, tôi đã t
 #### 1. Trường hợp dễ gây sai lệch nhất hiện tại:
 Có 2 trường hợp dễ khiến hệ thống trả lời sai hoặc sử dụng sai tri thức nhất:
 
-1. **Trường hợp 1: Câu hỏi đòi hỏi tính toán suy luận có điều kiện thâm niên (Calculated Condition & Arithmetic Reasoning - Case TC-M2-07)**:
-   - *Hiện tượng*: Người dùng hỏi câu hỏi yêu cầu tính toán kết hợp điều kiện: *"Nếu tôi đã làm việc tại công ty đủ 5 năm thì năm nay tôi được hưởng bao nhiêu ngày phép?"*.
-   - *Nguy cơ*: Trong quy chế có quy định *"Cứ đủ 5 năm làm việc liên tục được cộng thêm 01 ngày phép"*. Tuy nhiên, vì kiến trúc MVP là Extractive RAG (trích xuất văn bản tĩnh), hệ thống chỉ tìm kiếm đoạn văn có con số 15 ngày cơ bản mà không tự động thực hiện phép cộng số học `15 + 1 = 16`, dẫn đến câu trả lời bị thiếu hoặc sai lệch so với quyền lợi thực tế của người hỏi.
+1. **Trường hợp 1: Truy vấn mốc thời gian lịch sử & Điểm mù chuyển tiếp phiên bản (Temporal Query / Version Transition — Case TC-M2-07)**:
+   - *Hiện tượng*: Người dùng hỏi câu hỏi gắn liền với mốc thời gian quá khứ: *"Năm 2025 (năm ngoái) chính sách nghỉ phép của AlphaPay quy định tôi được bao nhiêu ngày phép?"*.
+   - *Nguy cơ*: Trong cơ chế quản trị phiên bản của hệ thống, bộ lọc `current_versions` sử dụng ngày hiện tại của hệ thống (`today = date.today()` — năm 2026) làm mốc thời gian mặc định để lọc tài liệu hiệu lực. Do đó, các phiên bản cũ như `v2` (áp dụng năm 2025: 13 ngày) bị tự động gạt bỏ vì coi là đã hết hạn (`OBSOLETE`). Hệ thống chỉ đưa phiên bản `v3` (năm 2026: 15 ngày) vào context, dẫn đến việc LLM trả lời sai mốc thời gian mà người dùng đang tra cứu.
+   - *Tính chất rủi ro*: Nếu bỏ bộ lọc thời gian để RAG lấy "top-k chunk tự do", cả `v1`, `v2`, `v3` sẽ cùng lọt vào context, khiến LLM bị nhiễu loạn giữa các chính sách cũ - mới và sinh ảo giác trích dẫn nhầm văn bản hết hiệu lực.
 2. **Trường hợp 2: Sai lệch từ Metadata tài liệu (Metadata Corruption / Outdated Tagging)**:
    - *Hiện tượng*: Một tài liệu thực tế đã bị sửa đổi hoặc hết hạn nhưng người quản trị quên không cập nhật trường `effective_to` hoặc gắn nhầm thẻ phòng ban/công ty.
    - *Nguy cơ*: Vì hệ thống tin tưởng tuyệt đối vào metadata để lọc quyền, metadata sai sẽ dẫn đến việc cấp phát sai văn bản vào context của LLM.
@@ -62,8 +63,8 @@ Có 2 trường hợp dễ khiến hệ thống trả lời sai hoặc sử dụ
 *(Ghi chú: Trường hợp từ đồng nghĩa tự nhiên ở test case `T08` — "Số ngày nghỉ hằng năm" — trước đó từng bị từ chối do bộ lọc từ khóa cứng, nay đã được tôi giải quyết triệt để bằng việc mở rộng tập từ khóa ngữ nghĩa và bổ sung cơ chế fallback tự phục hồi).*
 
 #### 2. Cách phát hiện rủi ro:
-- **Xây dựng bộ kiểm thử đối kháng đa bối cảnh (Adversarial Test Suite)**: Tôi xây dựng 60 test cases giả lập (`data/synthetic/tests/`) và bộ 8 test cases chuyên biệt (`evaluation/test_cases.json`) với đầy đủ các bẫy: câu hỏi bẫy bối cảnh công ty, bẫy quyền hạn, bẫy bản nháp (draft), câu hỏi mập mờ, câu hỏi dùng từ đồng nghĩa và câu hỏi tính toán điều kiện thâm niên.
-- **Quan sát kết quả thực nghiệm**: Khi đối chiếu câu hỏi tính toán thâm niên 5 năm, hệ thống chỉ trích xuất con số tĩnh `15 ngày` thay vì suy luận ra `16 ngày`.
+- **Xây dựng bộ kiểm thử đối kháng đa bối cảnh (Adversarial Test Suite)**: Tôi xây dựng 60 test cases giả lập (`data/synthetic/tests/`) và bộ 8 test cases chuyên biệt (`evaluation/test_cases.json`) với đầy đủ các bẫy: câu hỏi bẫy bối cảnh công ty, bẫy quyền hạn, bẫy bản nháp (draft), câu hỏi mập mờ, câu hỏi dùng từ đồng nghĩa và câu hỏi truy vấn mốc lịch sử phiên bản.
+- **Quan sát kết quả thực nghiệm**: Khi đối chiếu câu hỏi mốc thời gian năm 2025, hệ thống tự động lọc bỏ bản `v2` (13 ngày) và chỉ cấp bản `v3` (15 ngày), dẫn đến câu trả lời bị lệch thời điểm hiệu lực.
 
 #### 3. Cách kiểm soát rủi ro trong hệ thống:
 Hệ thống áp dụng nguyên tắc **"Thà từ chối trung thực (ABSTAIN) còn hơn trả lời sai (Hallucination)"** thông qua 4 chốt chặn kiểm soát:
@@ -71,4 +72,4 @@ Hệ thống áp dụng nguyên tắc **"Thà từ chối trung thực (ABSTAIN)
 1. **Nguyên tắc "Fail-Safe Default" (Mặc định an toàn)**: Khi không chắc chắn về chủ đề hoặc điểm tương đồng ngữ nghĩa dưới ngưỡng an toàn, hệ thống tự động rơi về trạng thái `ABSTAIN` kèm giải thích lịch sự, tuyệt đối không cho LLM "đoán mò".
 2. **Chốt chặn Kiểm định Trích dẫn (Strict Citation Assertion)**: Tại [src/service.py](file:///d:/KieuQuy/Documents/Appota/src/service.py#L69-L75), hệ thống dùng mã kiểm tra nghiêm ngặt: Nếu câu trả lời sinh ra không có trích dẫn, hoặc đoạn trích dẫn không khớp 100% từng ký tự với văn bản nguồn được cấp phép, câu trả lời sẽ bị hủy bỏ ngay lập tức.
 3. **Cơ chế ghi nhận Trace kiểm toán (Audit Logging)**: Mỗi truy vấn đều sinh ra một bản ghi audit trace ẩn chứa đầy đủ: danh sách tài liệu bị loại vì quyền, danh sách tài liệu bị loại vì hết hạn, quyết định của resolver và độ trễ xử lý. Nhờ đó, đội ngũ kỹ thuật có thể kiểm tra chính xác nguyên nhân vì sao hệ thống từ chối hoặc trả lời.
-4. **Lộ trình nâng cấp**: Để giải quyết triệt để bài toán tính toán điều kiện số học và thâm niên, hệ thống cần tích hợp cơ chế Function Calling (gọi Tool tính toán chuyên biệt hoặc hàm Python nội bộ) thay vì phó mặc cho LLM tự tính nhẩm trong prompt.
+4. **Lộ trình nâng cấp**: Để giải quyết triệt để rủi ro thời gian, hệ thống cần bổ sung tầng **Trích xuất thực thể thời gian (Temporal Entity Parser)** từ câu hỏi người dùng (ví dụ: *"năm 2025"* ➔ tự động gán `query_date = 2025-06-01`) trước khi đưa qua bộ lọc phiên bản, thay vì cố định ngày chạy của hệ thống.

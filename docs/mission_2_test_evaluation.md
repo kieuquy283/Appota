@@ -120,21 +120,23 @@ Tài liệu kiểm thử nghiệm thu hệ thống Trợ lý tra cứu chính s�
 
 ## 3. TÌNH HUỐNG SẢN PHẨM CHƯA XỬ LÝ TỐT / THẤT BẠI (PRODUCT LIMITATION)
 
-### Tình huống 7: Câu hỏi đòi hỏi tính toán suy luận có điều kiện thâm niên (Calculated Condition & Arithmetic Reasoning)
+### Tình huống 7: Truy vấn điểm mốc thời gian lịch sử & Xung đột phiên bản (Temporal Query / Time-Travel Failure)
 * **Mã kiểm thử**: `TC-M2-07`
 * **Người hỏi giả lập**: `U01` — Alice (AlphaPay)
-* **Câu hỏi**: *"Nếu tôi đã làm việc tại công ty đủ 5 năm thì năm nay tôi được hưởng bao nhiêu ngày phép?"*
+* **Câu hỏi**: *"Năm 2025 (năm ngoái) chính sách nghỉ phép của AlphaPay quy định tôi được bao nhiêu ngày phép?"*
 * **Kỳ vọng**: 
   - Trạng thái mong muốn: `ANSWER`.
-  - Nội dung suy luận: Hệ thống nhận diện quy định *"Mỗi năm có 15 ngày phép. Cứ đủ 5 năm làm việc liên tục được cộng thêm 01 ngày"* và thực hiện phép tính `15 + 1 = 16 ngày phép`.
+  - Nội dung suy luận lịch sử: Hệ thống nhận diện câu hỏi hướng tới năm 2025, tra cứu phiên bản `v2` của `ALPHA-LEAVE` (áp dụng từ 2025-01-01 đến 2026-01-01) và trả lời đúng con số **13 ngày phép**.
+  - Trích dẫn: `ALPHA-LEAVE` phiên bản `v2`.
 * **Kết quả thực tế**: 
-  - Trạng thái: `ANSWER` (nhưng nội dung chưa đầy đủ/chính xác theo điều kiện).
-  - Câu trả lời: *"Nếu bạn là nhân viên toàn thời gian, bạn sẽ có 15 ngày nghỉ phép hàng năm [1]."* (Chỉ trích xuất được con số cơ bản 15 ngày, bỏ sót hoàn toàn điều kiện thâm niên 5 năm và không thực hiện phép cộng `15 + 1 = 16`).
-  - Trích dẫn: `AlphaPay Annual Leave Policy`.
+  - Trạng thái: `ANSWER` (nhưng trả lời sai mốc thời gian lịch sử).
+  - Câu trả lời: *"Theo chính sách nghỉ phép của AlphaPay, nhân viên chính thức có 15 ngày nghỉ phép năm có hưởng lương [1]."*
+  - Trích dẫn: `ALPHA-LEAVE` phiên bản `v3` (phiên bản năm 2026 hiện hành).
 * **Đạt / Chưa đạt**: **Chưa đạt (FAIL)**
 * **Điều học được**: 
-  - **Nguyên nhân cốt lõi**: Bản chất của mô hình RAG trích xuất thông tin (Extractive RAG) là tìm kiếm và trích dẫn các đoạn văn bản tĩnh khớp với câu hỏi. RAG không được thiết kế để tự động làm toán, suy luận điều kiện bắc cầu (multi-hop condition deduction) hoặc tính toán mốc thời gian/thâm niên trừ khi có công cụ chuyên biệt hỗ trợ.
-  - **Hướng khắc phục**: Với các chính sách có yếu tố số học (tính lương, thưởng thâm niên, phép lũy tiến), hệ thống cần tích hợp cơ chế Function Calling (gọi Tool tính toán chuyên biệt hoặc hàm Python nội bộ) thay vì phó mặc hoàn toàn cho LLM tự tính nhẩm trong prompt.
+  - **Nguyên nhân cốt lõi**: Bộ lọc quản trị phiên bản (`current_versions`) đang sử dụng ngày chạy thực tế của hệ thống (`today = date.today()` — năm 2026) làm mốc thời gian mặc định để lọc tài liệu hiệu lực. Do đó, các phiên bản cũ như `v2` (2025: 13 ngày) bị tự động loại bỏ (`OBSOLETE`) ngay từ tầng tiền truy xuất. LLM chỉ nhận được bản `v3` (2026: 15 ngày) nên trả lời sai so với mốc năm 2025 của câu hỏi.
+  - **Ranh giới bài toán**: Nếu bỏ bộ lọc thời gian để RAG lấy "top-k chunk tự do", cả `v1`, `v2`, `v3` sẽ cùng lọt vào context, khiến LLM bị nhiễu loạn giữa các quy định cũ - mới và sinh ảo giác.
+  - **Hướng khắc phục**: Hệ thống cần bổ sung tầng **Trích xuất thực thể thời gian (Temporal Entity Parser)** từ câu hỏi người dùng (ví dụ: *"năm 2025"* ➔ tự động gán `query_date = 2025-06-01`) trước khi đưa qua bộ lọc phiên bản, thay vì cố định ngày chạy của hệ thống.
 
 ---
 
@@ -148,7 +150,7 @@ Tài liệu kiểm thử nghiệm thu hệ thống Trợ lý tra cứu chính s�
 | **TC-M2-04** | Khó / Mâu thuẫn | U03 hỏi số ngày WFH | CONFLICT | CONFLICT | **Đạt** | Phát hiện mâu thuẫn chính sách, hiển thị cả 2 nguồn. |
 | **TC-M2-05** | Dữ liệu không rõ | U01 hỏi WFH ngày thứ Sáu | ABSTAIN | ABSTAIN | **Đạt** | Từ chối trả lời khi văn bản không nêu ngày cụ thể. |
 | **TC-M2-06** | Làm tốt (Paraphrase) | U01 hỏi *"nghỉ hằng năm"* | ANSWER | ANSWER | **Đạt** | Đã mở rộng intent nhận diện từ đồng nghĩa tự nhiên. |
-| **TC-M2-07** | Chưa tốt / Thất bại | U01 hỏi thâm niên 5 năm | 16 ngày phép | 15 ngày phép | **Chưa đạt** | RAG trích xuất tĩnh chưa hỗ trợ tính toán điều kiện logic. |
+| **TC-M2-07** | Chưa tốt / Thất bại | U01 hỏi ngày phép năm 2025 | 13 ngày (v2) | 15 ngày (v3) | **Chưa đạt** | Bộ lọc phiên bản cố định theo ngày hiện tại, chưa hỗ trợ mốc lịch sử. |
 
 - **Tổng số tình huống**: 07 tình huống (6 Đạt, 1 Chưa đạt).
 - **Tỷ lệ Đạt**: 6/7 tình huống (**85.7%**).
