@@ -17,8 +17,9 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
-from fastapi import FastAPI, Header, HTTPException, status
+from fastapi import APIRouter, FastAPI, Header, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from src.service import answer_question, list_demo_users
@@ -80,12 +81,16 @@ def verify_internal_key(x_internal_key: str | None = Header(None, alias="x-inter
             )
 
 
-@app.get("/health")
+# Main API Router
+router = APIRouter()
+
+
+@router.get("/health")
 def health_check() -> dict[str, str]:
     return {"status": "ok", "service": "knowledge-guard-api"}
 
 
-@app.get("/users", response_model=list[UserResponse])
+@router.get("/users", response_model=list[UserResponse])
 def get_users() -> list[dict[str, Any]]:
     """Return sanitized list of active synthetic demo users."""
     try:
@@ -110,7 +115,7 @@ def get_users() -> list[dict[str, Any]]:
         ) from exc
 
 
-@app.post("/answer", response_model=AnswerResponse)
+@router.post("/answer", response_model=AnswerResponse)
 def post_answer(
     payload: AnswerRequest,
     x_internal_key: str | None = Header(None, alias="x-internal-key"),
@@ -161,3 +166,28 @@ def post_answer(
             reason="service_error",
             citations=[],
         )
+
+
+# Include router under both root and /api prefix so Vercel matches regardless of rewrite prefix
+app.include_router(router)
+app.include_router(router, prefix="/api")
+
+
+@app.get("/")
+@app.get("/api")
+def root_status() -> dict[str, str]:
+    return {"status": "ok", "service": "knowledge-guard-api"}
+
+
+@app.api_route("/{full_path:path}", methods=["GET", "POST", "OPTIONS"])
+def catch_all_debug(full_path: str, request: Request):
+    """Fallback handler to aid debugging when an unmatched route is requested."""
+    return JSONResponse(
+        status_code=status.HTTP_404_NOT_FOUND,
+        content={
+            "detail": "Not Found",
+            "requested_path": request.url.path,
+            "full_path": full_path,
+            "available_endpoints": ["/health", "/api/health", "/users", "/api/users", "/answer", "/api/answer"],
+        },
+    )
