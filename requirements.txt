@@ -1,3 +1,5 @@
-# Streamlit UI and local .env configuration.
+# Streamlit UI, FastAPI service, and local .env configuration.
 streamlit>=1.35.0
+fastapi>=0.110.0
+uvicorn>=0.28.0
 python-dotenv>=1.0,<2
