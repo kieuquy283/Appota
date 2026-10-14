@@ -21,7 +21,7 @@ def _normalize(text: str) -> str:
 def detect_intent(question: str) -> tuple[str | None, bool]:
     q = _normalize(question)
     friday = "thu sau" in q or "friday" in q
-    if any(x in q for x in ("nghi phep", "ngay phep", "annual leave", "leave days")):
+    if any(x in q for x in ("nghi phep", "ngay phep", "nghi hang nam", "phep nam", "ngay nghi", "annual leave", "leave days")):
         return "leave_days", friday
     if any(x in q for x in ("wfh", "work from home", "lam viec tai nha", "remote work")):
         return "wfh_days", friday
@@ -73,8 +73,11 @@ def retrieve(question: str, eligible: list[dict], topic: str | None, top_k: int 
     model = os.getenv("EMBEDDING_MODEL")
     key = os.getenv("EMBEDDING_API_KEY") or os.getenv("LLM_API_KEY") or os.getenv("OPENAI_API_KEY")
     if model and key:
-        base = os.getenv("EMBEDDING_BASE_URL") or os.getenv("LLM_BASE_URL", "https://api.openai.com/v1")
-        qvec = _api_embedding(question, model, base, key)
-        return sorted(candidates, key=lambda x: (-_dense_cosine(qvec, _api_embedding(_embedding_document_text(x), model, base, key)), x["document_id"]))[:top_k]
+        try:
+            base = os.getenv("EMBEDDING_BASE_URL") or os.getenv("LLM_BASE_URL", "https://api.openai.com/v1")
+            qvec = _api_embedding(question, model, base, key)
+            return sorted(candidates, key=lambda x: (-_dense_cosine(qvec, _api_embedding(_embedding_document_text(x), model, base, key)), x["document_id"]))[:top_k]
+        except Exception:
+            pass
     qvec = _vector(question)
     return sorted(candidates, key=lambda x: (-_cosine(qvec, _vector(x["content"] + " " + x["title"])), x["document_id"]))[:top_k]

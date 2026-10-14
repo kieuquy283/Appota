@@ -101,39 +101,55 @@ Tài liệu kiểm thử nghiệm thu hệ thống Trợ lý tra cứu chính s�
 
 ---
 
+### Tình huống 6: Xử lý từ ngữ đồng nghĩa đa dạng (Paraphrase Understanding — Đã giải quyết)
+* **Mã kiểm thử**: `TC-M2-06` (Mã trong hệ thống: `T08`)
+* **Người hỏi giả lập**: `U01` — Alice (AlphaPay)
+* **Câu hỏi**: *"Số ngày nghỉ hằng năm của tôi là bao nhiêu?"* (Diễn đạt tự nhiên thay vì dùng từ chuẩn *"nghỉ phép"*)
+* **Kỳ vọng**: 
+  - Trạng thái phản hồi: `ANSWER`.
+  - Nội dung: Hệ thống nhận diện *"nghỉ hằng năm"* tương đương *"nghỉ phép"*, trích dẫn `ALPHA-LEAVE` và trả lời 15 ngày.
+* **Kết quả thực tế**: 
+  - Trạng thái: `ANSWER`.
+  - Câu trả lời: *"Nhân viên toàn thời gian được hưởng 15 ngày nghỉ hằng năm mỗi năm [1]."*
+  - Trích dẫn: `AlphaPay Annual Leave Policy` — Điều 4.
+* **Đạt / Chưa đạt**: **Đạt (PASS sau khi tối ưu bộ từ khóa)**
+* **Điều học được**: 
+  - Cần chủ động chuẩn hóa và mở rộng các cụm từ đồng nghĩa phổ biến trong tiếng Việt doanh nghiệp để tránh từ chối nhầm các câu hỏi hợp lệ.
+
+---
+
 ## 3. TÌNH HUỐNG SẢN PHẨM CHƯA XỬ LÝ TỐT / THẤT BẠI (PRODUCT LIMITATION)
 
-### Tình huống 6: Hạn chế khi người dùng dùng từ đồng nghĩa đa dạng (Paraphrase Limitation)
-* **Mã kiểm thử**: `TC-M2-06` (Mã gốc trong hệ thống: `T08`)
+### Tình huống 7: Câu hỏi đòi hỏi tính toán suy luận có điều kiện thâm niên (Calculated Condition & Arithmetic Reasoning)
+* **Mã kiểm thử**: `TC-M2-07`
 * **Người hỏi giả lập**: `U01` — Alice (AlphaPay)
-* **Câu hỏi**: *"Số ngày nghỉ hằng năm của tôi là bao nhiêu?"* (Diễn đạt đồng nghĩa tự nhiên thay vì dùng từ chuẩn *"nghỉ phép"*)
+* **Câu hỏi**: *"Nếu tôi đã làm việc tại công ty đủ 5 năm thì năm nay tôi được hưởng bao nhiêu ngày phép?"*
 * **Kỳ vọng**: 
   - Trạng thái mong muốn: `ANSWER`.
-  - Nội dung: Hệ thống hiểu được *"nghỉ hằng năm"* chính là *"nghỉ phép năm"*, truy xuất tài liệu `ALPHA-LEAVE` và trả lời 15 ngày.
+  - Nội dung suy luận: Hệ thống nhận diện quy định *"Mỗi năm có 15 ngày phép. Cứ đủ 5 năm làm việc liên tục được cộng thêm 01 ngày"* và thực hiện phép tính `15 + 1 = 16 ngày phép`.
 * **Kết quả thực tế**: 
-  - Trạng thái: `ABSTAIN` (Từ chối trả lời).
-  - Câu trả lời: *"Tài liệu hiện có chưa đủ căn cứ để trả lời câu hỏi này."*
-  - Trích dẫn: `citations: []`.
+  - Trạng thái: `ANSWER` (nhưng nội dung chưa đầy đủ/chính xác theo điều kiện).
+  - Câu trả lời: *"Nếu bạn là nhân viên toàn thời gian, bạn sẽ có 15 ngày nghỉ phép hàng năm [1]."* (Chỉ trích xuất được con số cơ bản 15 ngày, bỏ sót hoàn toàn điều kiện thâm niên 5 năm và không thực hiện phép cộng `15 + 1 = 16`).
+  - Trích dẫn: `AlphaPay Annual Leave Policy`.
 * **Đạt / Chưa đạt**: **Chưa đạt (FAIL)**
 * **Điều học được**: 
-  - **Nguyên nhân cốt lõi**: Bộ nhận diện ý định (`detect_intent`) trong bản MVP đang sử dụng quy tắc khớp chuỗi từ khóa cứng (`"nghi phep"`, `"ngay phep"`). Khi người dùng diễn đạt bằng các cụm từ đồng nghĩa thông dụng như *"nghỉ hằng năm"*, *"phép năm"*, *"chế độ nghỉ"* thì quy tắc lọc bị trượt, dẫn đến việc gán nhãn chủ đề thất bại (`topic is None`) và hệ thống từ chối oan.
-  - **Hướng khắc phục**: 
-    1. *Ngắn hạn*: Mở rộng từ điển từ đồng nghĩa trong hàm chuẩn hóa truy vấn.
-    2. *Dài hạn*: Chuyển từ rule-based intent matching sang Semantic Search thuần túy (dựa trên vector similarity embedding hoặc BM25), hoặc bổ sung tầng Query Rewriting bằng LLM trước khi truy xuất.
+  - **Nguyên nhân cốt lõi**: Bản chất của mô hình RAG trích xuất thông tin (Extractive RAG) là tìm kiếm và trích dẫn các đoạn văn bản tĩnh khớp với câu hỏi. RAG không được thiết kế để tự động làm toán, suy luận điều kiện bắc cầu (multi-hop condition deduction) hoặc tính toán mốc thời gian/thâm niên trừ khi có công cụ chuyên biệt hỗ trợ.
+  - **Hướng khắc phục**: Với các chính sách có yếu tố số học (tính lương, thưởng thâm niên, phép lũy tiến), hệ thống cần tích hợp cơ chế Function Calling (gọi Tool tính toán chuyên biệt hoặc hàm Python nội bộ) thay vì phó mặc hoàn toàn cho LLM tự tính nhẩm trong prompt.
 
 ---
 
 ## BẢNG TỔNG KẾT KẾT QUẢ KIỂM THỬ MISSION 2
 
-| Mã Test | Phân loại | Câu hỏi & Ngữ cảnh | Kỳ vọng | Kết quả thực tế | Đánh giá | Điều học được |
+| Mã Test | Phân loại | Tình huống kiểm thử | Kỳ vọng | Kết quả thực tế | Đánh giá | Điều học được |
 | :---: | :--- | :--- | :---: | :---: | :---: | :--- |
-| **TC-M2-01** | Làm tốt | U01 hỏi ngày nghỉ phép | ANSWER | ANSWER | **Đạt** | RBAC/ABAC phân quyền đúng tài liệu của AlphaPay. |
-| **TC-M2-02** | Làm tốt | U03 hỏi cùng câu hỏi | ANSWER | ANSWER | **Đạt** | Cô lập dữ liệu giữa các công ty; ra đúng nguồn NovaGame. |
+| **TC-M2-01** | Làm tốt | U01 hỏi số ngày nghỉ phép | ANSWER | ANSWER | **Đạt** | RBAC/ABAC phân quyền đúng tài liệu của AlphaPay. |
+| **TC-M2-02** | Làm tốt | U03 hỏi cùng câu hỏi nghỉ phép | ANSWER | ANSWER | **Đạt** | Cô lập dữ liệu giữa các công ty; ra đúng nguồn NovaGame. |
 | **TC-M2-03** | Khó / Quyền hạn | U01 hỏi bảng lương HR | ABSTAIN | ABSTAIN | **Đạt** | Chặn nguồn nhạy cảm trước khi vào prompt LLM. |
 | **TC-M2-04** | Khó / Mâu thuẫn | U03 hỏi số ngày WFH | CONFLICT | CONFLICT | **Đạt** | Phát hiện mâu thuẫn chính sách, hiển thị cả 2 nguồn. |
-| **TC-M2-05** | Dữ liệu không rõ | U01 hỏi WFH thứ Sáu | ABSTAIN | ABSTAIN | **Đạt** | Từ chối trả lời khi văn bản không nêu ngày cụ thể. |
-| **TC-M2-06** | Chưa tốt / Thất bại | U01 hỏi *"nghỉ hằng năm"* | ANSWER | ABSTAIN | **Chưa đạt** | Khớp từ khóa cứng bỏ sót câu diễn đạt từ đồng nghĩa. |
+| **TC-M2-05** | Dữ liệu không rõ | U01 hỏi WFH ngày thứ Sáu | ABSTAIN | ABSTAIN | **Đạt** | Từ chối trả lời khi văn bản không nêu ngày cụ thể. |
+| **TC-M2-06** | Làm tốt (Paraphrase) | U01 hỏi *"nghỉ hằng năm"* | ANSWER | ANSWER | **Đạt** | Đã mở rộng intent nhận diện từ đồng nghĩa tự nhiên. |
+| **TC-M2-07** | Chưa tốt / Thất bại | U01 hỏi thâm niên 5 năm | 16 ngày phép | 15 ngày phép | **Chưa đạt** | RAG trích xuất tĩnh chưa hỗ trợ tính toán điều kiện logic. |
 
-- **Tổng số tình huống**: 06 tình huống.
-- **Tỷ lệ Đạt**: 5/6 tình huống (**83.3%**).
-- **Rò rỉ dữ liệu ngoài quyền**: **0%** (Không vi phạm an toàn thông tin).
+- **Tổng số tình huống**: 07 tình huống (6 Đạt, 1 Chưa đạt).
+- **Tỷ lệ Đạt**: 6/7 tình huống (**85.7%**).
+- **Rò rỉ dữ liệu ngoài quyền**: **0%** (Không có chunk cấm nào lọt vào LLM context).

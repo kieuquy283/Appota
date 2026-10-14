@@ -49,19 +49,21 @@ So với bản thiết kế kiến trúc lý thuyết ở Mission 1, tôi đã t
 ## CÂU HỎI 3:
 ### Trường hợp nào hiện khiến hệ thống dễ trả lời sai hoặc sử dụng sai tri thức nhất? Bạn phát hiện và kiểm soát rủi ro đó như thế nào?
 
-#### 1. Trường hợp dễ gây sai lệch nhất:
-Có 2 trường hợp hiện dễ khiến hệ thống trả lời sai hoặc sử dụng sai tri thức nhất:
+#### 1. Trường hợp dễ gây sai lệch nhất hiện tại:
+Có 2 trường hợp dễ khiến hệ thống trả lời sai hoặc sử dụng sai tri thức nhất:
 
-1. **Trường hợp 1: Người dùng sử dụng từ ngữ đồng nghĩa phong phú (Paraphrase & Semantic Gap - Đã bộc lộ ở test case T08)**:
-   - *Hiện tượng*: Người dùng không dùng từ khóa chuẩn trong quy chế (*"nghỉ phép"*) mà dùng các cách diễn đạt dân dã, tự nhiên (*"số ngày nghỉ hằng năm"*, *"chế độ nghỉ dưỡng"*).
-   - *Nguy cơ*: Do bản MVP đang sử dụng bộ lọc từ khóa cứng (`detect_intent`) để phân loại chủ đề trước khi tìm kiếm, khi trượt từ khóa, hệ thống kết luận không có tài liệu và trả về `ABSTAIN` (từ chối oan khi thực tế có tài liệu hợp lệ).
+1. **Trường hợp 1: Câu hỏi đòi hỏi tính toán suy luận có điều kiện thâm niên (Calculated Condition & Arithmetic Reasoning - Case TC-M2-07)**:
+   - *Hiện tượng*: Người dùng hỏi câu hỏi yêu cầu tính toán kết hợp điều kiện: *"Nếu tôi đã làm việc tại công ty đủ 5 năm thì năm nay tôi được hưởng bao nhiêu ngày phép?"*.
+   - *Nguy cơ*: Trong quy chế có quy định *"Cứ đủ 5 năm làm việc liên tục được cộng thêm 01 ngày phép"*. Tuy nhiên, vì kiến trúc MVP là Extractive RAG (trích xuất văn bản tĩnh), hệ thống chỉ tìm kiếm đoạn văn có con số 15 ngày cơ bản mà không tự động thực hiện phép cộng số học `15 + 1 = 16`, dẫn đến câu trả lời bị thiếu hoặc sai lệch so với quyền lợi thực tế của người hỏi.
 2. **Trường hợp 2: Sai lệch từ Metadata tài liệu (Metadata Corruption / Outdated Tagging)**:
-   - *Hiện tượng*: Một tài liệu thực tế đã bị thay thế nhưng người nhập liệu quên không cập nhật trường `effective_to` hoặc gắn nhầm tag `department`.
+   - *Hiện tượng*: Một tài liệu thực tế đã bị sửa đổi hoặc hết hạn nhưng người quản trị quên không cập nhật trường `effective_to` hoặc gắn nhầm thẻ phòng ban/công ty.
    - *Nguy cơ*: Vì hệ thống tin tưởng tuyệt đối vào metadata để lọc quyền, metadata sai sẽ dẫn đến việc cấp phát sai văn bản vào context của LLM.
 
+*(Ghi chú: Trường hợp từ đồng nghĩa tự nhiên ở test case `T08` — "Số ngày nghỉ hằng năm" — trước đó từng bị từ chối do bộ lọc từ khóa cứng, nay đã được tôi giải quyết triệt để bằng việc mở rộng tập từ khóa ngữ nghĩa và bổ sung cơ chế fallback tự phục hồi).*
+
 #### 2. Cách phát hiện rủi ro:
-- **Xây dựng bộ kiểm thử đối kháng đa bối cảnh (Adversarial Test Suite)**: Tôi xây dựng 60 test cases giả lập (`data/synthetic/tests/`) và bộ 8 test cases chuyên biệt (`evaluation/test_cases.json`) với đầy đủ các bẫy: câu hỏi bẫy bối cảnh công ty, bẫy quyền hạn, bẫy bản nháp (draft), câu hỏi mập mờ và câu hỏi dùng từ đồng nghĩa.
-- **Quan sát kết quả thực nghiệm**: Tình huống `T08` đã được phát hiện ngay trong quá trình chạy `python -m scripts.evaluate`: hệ thống trả về `ABSTAIN` thay vì `ANSWER` khi gặp câu *"Số ngày nghỉ hằng năm của tôi là bao nhiêu?"*.
+- **Xây dựng bộ kiểm thử đối kháng đa bối cảnh (Adversarial Test Suite)**: Tôi xây dựng 60 test cases giả lập (`data/synthetic/tests/`) và bộ 8 test cases chuyên biệt (`evaluation/test_cases.json`) với đầy đủ các bẫy: câu hỏi bẫy bối cảnh công ty, bẫy quyền hạn, bẫy bản nháp (draft), câu hỏi mập mờ, câu hỏi dùng từ đồng nghĩa và câu hỏi tính toán điều kiện thâm niên.
+- **Quan sát kết quả thực nghiệm**: Khi đối chiếu câu hỏi tính toán thâm niên 5 năm, hệ thống chỉ trích xuất con số tĩnh `15 ngày` thay vì suy luận ra `16 ngày`.
 
 #### 3. Cách kiểm soát rủi ro trong hệ thống:
 Hệ thống áp dụng nguyên tắc **"Thà từ chối trung thực (ABSTAIN) còn hơn trả lời sai (Hallucination)"** thông qua 4 chốt chặn kiểm soát:
@@ -69,4 +71,4 @@ Hệ thống áp dụng nguyên tắc **"Thà từ chối trung thực (ABSTAIN)
 1. **Nguyên tắc "Fail-Safe Default" (Mặc định an toàn)**: Khi không chắc chắn về chủ đề hoặc điểm tương đồng ngữ nghĩa dưới ngưỡng an toàn, hệ thống tự động rơi về trạng thái `ABSTAIN` kèm giải thích lịch sự, tuyệt đối không cho LLM "đoán mò".
 2. **Chốt chặn Kiểm định Trích dẫn (Strict Citation Assertion)**: Tại [src/service.py](file:///d:/KieuQuy/Documents/Appota/src/service.py#L69-L75), hệ thống dùng mã kiểm tra nghiêm ngặt: Nếu câu trả lời sinh ra không có trích dẫn, hoặc đoạn trích dẫn không khớp 100% từng ký tự với văn bản nguồn được cấp phép, câu trả lời sẽ bị hủy bỏ ngay lập tức.
 3. **Cơ chế ghi nhận Trace kiểm toán (Audit Logging)**: Mỗi truy vấn đều sinh ra một bản ghi audit trace ẩn chứa đầy đủ: danh sách tài liệu bị loại vì quyền, danh sách tài liệu bị loại vì hết hạn, quyết định của resolver và độ trễ xử lý. Nhờ đó, đội ngũ kỹ thuật có thể kiểm tra chính xác nguyên nhân vì sao hệ thống từ chối hoặc trả lời.
-4. **Lộ trình nâng cấp**: Để giải quyết triệt để case `T08`, lộ trình tiếp theo sẽ thay thế hàm regex `detect_intent` bằng mô hình Dense Embedding đa ngôn ngữ kết hợp kỹ thuật Hybrid Search (BM25 + Vector) để bao quát trọn vẹn mọi biến thể ngôn ngữ tự nhiên của người dùng.
+4. **Lộ trình nâng cấp**: Để giải quyết triệt để bài toán tính toán điều kiện số học và thâm niên, hệ thống cần tích hợp cơ chế Function Calling (gọi Tool tính toán chuyên biệt hoặc hàm Python nội bộ) thay vì phó mặc cho LLM tự tính nhẩm trong prompt.
