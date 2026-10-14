@@ -5,8 +5,8 @@
 
 ---
 
-## 🎯 CẦN CHỨNG MINH
-Dự án được xây dựng nhằm chứng minh phương pháp luận kỹ thuật: **Chọn đúng thứ cần làm ➔ Biến nó thành sản phẩm ➔ Kiểm thử nghiêm ngặt ➔ Biết rõ sản phẩm đang tốt và chưa tốt ở đâu.**
+## TỔNG QUAN
+Ứng dụng được xây dựng với mục đích kiểm thử và minh chứng phương pháp luận kỹ thuật: **Chọn đúng thứ cần làm ➔ Biến nó thành sản phẩm ➔ Kiểm thử nghiêm ngặt ➔ Biết rõ sản phẩm đang tốt và chưa tốt ở đâu.**
 
 ```
 [Chọn đúng thứ cần làm] ──► [Biến thành sản phẩm] ──► [Kiểm thử đa chiều] ──► [Nhận diện ranh giới]
@@ -30,7 +30,7 @@ Dự án được xây dựng nhằm chứng minh phương pháp luận kỹ thu
 
 ---
 
-## 🔄 CORE LOOP MISSION 2
+## CORE LOOP
 
 > **Câu hỏi + Bối cảnh người dùng ➔ Tìm đúng tri thức ➔ Sử dụng đúng phạm vi ➔ Trả lời có nguồn kiểm chứng.**
 
@@ -71,7 +71,7 @@ Cùng đặt câu hỏi: *"Tôi có bao nhiêu ngày nghỉ phép?"*:
 * **Carol (`U03`)** — Chuyên viên tại **NovaGame**: Hệ thống đối soát bối cảnh NovaGame ➔ Cấp quyền đọc `NOVA-LEAVE` ➔ Trả lời: **12 ngày nghỉ phép năm** (kèm trích dẫn chính sách NovaGame).
 * 🛡️ **Kết quả**: **0% rò rỉ chéo dữ liệu (Zero Cross-Company Leakage)**. Tài liệu của AlphaPay không bao giờ lọt vào ngữ cảnh xử lý của nhân sự NovaGame và ngược lại.
 
-### 📋 6 Tiêu chuẩn MVP đã chứng minh:
+### 6 Tiêu chuẩn MVP đã chứng minh:
 1. **Dữ liệu giả lập ở nhiều cấp tổ chức**: Phân cấp từ Tập đoàn (`GROUP`) ➔ Công ty thành viên (`ALPHA`, `NOVA`) ➔ Phòng ban (`ENG`, `HR`, `MARKETING`) ➔ Nhóm (`BACKEND`, `PLATFORM`, `CORE`, `GROWTH`).
 2. **Hiểu được bối cảnh người hỏi**: Tự động giải quyết quyền lợi dựa trên hồ sơ: `company`, `department`, `role`, `level`, `employment_type`.
 3. **Không sử dụng / làm lộ thông tin ngoài quyền**: Khi nhân viên thông thường hỏi bảng lương (`ALPHA-HR-COMPENSATION`), tài liệu bị loại bỏ ngay từ tầng lưu trữ (`unauthorized_context_rate = 0%`).
@@ -84,45 +84,57 @@ Cùng đặt câu hỏi: *"Tôi có bao nhiêu ngày nghỉ phép?"*:
 
 ---
 
+## 🏢 MÔ PHỎNG CƠ CẤU TỔ CHỨC VÀ NHÂN VIÊN
+
+Để kiểm chứng tính cô lập dữ liệu và khả năng phân quyền đa cấp trong tập đoàn, hệ thống xây dựng mô hình dữ liệu giả lập chuẩn hóa (Synthetic Schema) tại [data/seed.json](data/seed.json):
+
+### 1. Cây phân cấp tổ chức (Organizational Hierarchy)
+Hệ thống mô phỏng cấu trúc tập đoàn 4 tầng (`GROUP ➔ COMPANY ➔ DEPARTMENT ➔ TEAM`):
+
+```
+Appota Demo Group (GROUP)
+├── AlphaPay (ALPHA) — Công ty Fintech thành viên
+│   ├── Engineering (ALPHA-ENG)
+│   │   ├── Backend Team (ALPHA-BACKEND)
+│   │   └── Platform Team (ALPHA-PLATFORM)
+│   └── HR (ALPHA-HR)
+│       └── HR Ops Team (ALPHA-HR-OPS)
+└── NovaGame (NOVA) — Công ty Game & Publishing thành viên
+    ├── Engineering (NOVA-ENG)
+    │   └── Core Team (NOVA-CORE)
+    └── Marketing (NOVA-MARKETING)
+        └── Growth Team (NOVA-GROWTH)
+```
+
+### 2. Danh sách Nhân viên giả lập (Synthetic Personas)
+Hệ thống định nghĩa 6 tài khoản mẫu mang đầy đủ tổ hợp thuộc tính thực tế (kết hợp RBAC + ABAC) để phục vụ kiểm thử phân quyền:
+
+| Mã NV | Họ tên | Công ty | Phòng ban | Nhóm | Vai trò (Role) | Cấp bậc | Loại HĐ | Ý nghĩa kiểm thử trong hệ thống |
+| :---: | :--- | :--- | :--- | :--- | :--- | :---: | :---: | :--- |
+| **U01** | Alice | AlphaPay | Engineering | Backend | `EMPLOYEE` | Level 3 | Full-time | Nhân viên AlphaPay tiêu chuẩn; kiểm chứng truy xuất chính sách AlphaPay, bị chặn hỏi lương HR. |
+| **U02** | Bob | AlphaPay | Engineering | Backend | `PEOPLE_MANAGER` | Level 5 | Full-time | Quản lý trực tiếp; được quyền truy cập tài liệu quy trình phê duyệt nghỉ phép của Manager. |
+| **U03** | Carol | NovaGame | Engineering | Core | `EMPLOYEE` | Level 3 | Full-time | Cùng cấp bậc & vai trò với Alice nhưng thuộc NovaGame; kiểm chứng cách ly dữ liệu giữa 2 công ty con. |
+| **U04** | David | NovaGame | Marketing | Growth | `EMPLOYEE` | Level 2 | Full-time | Nhân viên Marketing cấp cơ sở tại NovaGame. |
+| **U05** | Helen | AlphaPay | HR | HR Ops | `HR` | Level 4 | Full-time | Chuyên viên Nhân sự; người duy nhất được cấp quyền truy cập cẩm nang lương thưởng nhạy cảm. |
+| **U06** | Frank | AlphaPay | Engineering | Platform | `EMPLOYEE` | Level 1 | Full-time | Nhân viên mới/Junior thuộc Platform Team AlphaPay. |
+
+### 3. Nguyên tắc Áp dụng & Phân quyền (Access & Applicability Rules)
+Mỗi tài liệu trong kho tri thức đều được gắn thẻ metadata chuẩn hóa:
+- **Quyền đọc (`access`)**: Xác định đối tượng được phép đọc (ví dụ: `role: HR` mới đọc được tài liệu lương thưởng; nhân viên thông thường bị chặn ngay từ tầng truy xuất).
+- **Phạm vi áp dụng (`applicability`)**: Quy định chính sách chỉ có hiệu lực cho đúng đơn vị (ví dụ: `company: AlphaPay` chỉ áp dụng cho nhân sự AlphaPay, không thể áp dụng cho NovaGame).
+- **Phân cấp thẩm quyền (`authority`)**: `OFFICIAL_POLICY` (Chính sách chính thức) > `APPROVED_PROCEDURE` (Quy trình) > `GUIDELINE` (Hướng dẫn) > `FAQ` (Hỏi đáp).
+
+---
+
 ## 🧪 BỘ KIỂM THỬ MISSION 2
 
 📄 *Chi tiết toàn văn 07 tình huống nghiệm thu xem tại: [docs/mission_2_test_evaluation.md](docs/mission_2_test_evaluation.md)*
-
-Bộ kiểm thử được xây dựng theo chuẩn quy cách: `Kỳ vọng ➔ Kết quả thực tế ➔ Đạt/Chưa đạt ➔ Điều học được`.
-
-| Mã Test | Phân loại | Tình huống kiểm thử | Kỳ vọng | Kết quả thực tế | Đánh giá | Điều học được |
-| :---: | :--- | :--- | :---: | :---: | :---: | :--- |
-| **TC-M2-01** | Làm tốt | `U01` (AlphaPay) hỏi số ngày nghỉ phép | `ANSWER` (15 ngày) | `ANSWER` (15 ngày) | **Đạt** | RBAC/ABAC phân quyền đúng tài liệu của AlphaPay. |
-| **TC-M2-02** | Làm tốt | `U03` (NovaGame) hỏi cùng câu hỏi nghỉ phép | `ANSWER` (12 ngày) | `ANSWER` (12 ngày) | **Đạt** | Cô lập dữ liệu giữa các công ty; ra đúng nguồn NovaGame. |
-| **TC-M2-03** | Khó / Quyền hạn | `U01` hỏi khung lương HR Confidential | `ABSTAIN` (Từ chối) | `ABSTAIN` (Từ chối) | **Đạt** | Chặn nguồn nhạy cảm trước khi vào prompt LLM. |
-| **TC-M2-04** | Khó / Mâu thuẫn | `U03` hỏi số ngày WFH (Chính sách A vs B) | `CONFLICT` (2 nguồn) | `CONFLICT` (2 nguồn) | **Đạt** | Phát hiện mâu thuẫn chính sách ngang quyền, hiển thị cả 2 nguồn. |
-| **TC-M2-05** | Dữ liệu không rõ | `U01` hỏi WFH vào ngày thứ Sáu | `ABSTAIN` (Từ chối) | `ABSTAIN` (Từ chối) | **Đạt** | Từ chối trả lời khi văn bản không nêu ngày cụ thể. |
-| **TC-M2-06** | Làm tốt (Paraphrase) | `U01` hỏi *"Số ngày nghỉ hằng năm"* | `ANSWER` (15 ngày) | `ANSWER` (15 ngày) | **Đạt** | Mở rộng intent nhận diện từ đồng nghĩa tự nhiên (`T08` PASS). |
-| **TC-M2-07** | Giới hạn thiết kế | `U01` hỏi nghỉ phép + WFH + Quản lý duyệt | Tổng hợp 3 nguồn | Chỉ ra 1 nguồn phép | **Chưa đạt** | Pipeline MVP đơn luồng, chưa có Query Decomposition & Multi-Topic Routing. |
-
-* **Tổng số ca kiểm thử**: 07 tình huống (6 Đạt, 1 Chưa đạt).
-* **Tỷ lệ Đạt**: **85.7%**.
-* **Tỷ lệ rò rỉ dữ liệu ngoài quyền**: **0.0%**.
 
 ---
 
 ## ❓ 3 CÂU HỎI BẮT BUỘC
 
 📄 *Chi tiết toàn văn bản luận giải xem tại: [docs/mission_2_mandatory_questions.md](docs/mission_2_mandatory_questions.md)*
-
-### Câu hỏi 1: Phần quan trọng nhất bạn chọn để hiện thực hóa trong MVP là gì? Vì sao nếu phần này hoạt động, bạn tin rằng hướng giải quyết của mình là khả thi?
-* **Phần cốt lõi**: **Tầng lọc quyền truy cập và tính áp dụng tiền truy xuất (Pre-Retrieval Authorization Guard)** kết hợp với **Kiểm định trích dẫn nguyên văn (Strict Verbatim Citation Guard)**.
-* **Cơ sở tính khả thi**: Trong bài toán Enterprise AI, LLM "nói dối trôi chảy" hoặc tiết lộ thông tin ngoài thẩm quyền là rủi ro chí mạng. Bằng việc chứng minh: Alice và Carol nhận hai nguồn tri thức độc lập, Alice bị chặn truy cập bảng lương ngay từ tầng lưu trữ (`unauthorized_context_rate = 0%`), ta khẳng định được nguyên lý: *Ranh giới an toàn của AI doanh nghiệp phải được thiết lập bằng kiến trúc phân quyền tất định từ bên ngoài LLM, chứ không trông chờ vào System Prompt.* Khi ranh giới này vững chắc, việc mở rộng quy mô dữ liệu hay tích hợp thêm phòng ban chỉ là bài toán mở rộng kỹ thuật thuần túy.
-
-### Câu hỏi 2: So với kế hoạch ở Mission 1, bạn đã thay đổi quyết định hoặc thiết kế nào? Điều gì trong quá trình làm khiến bạn thay đổi?
-* **Thay đổi 1: Bỏ Autonomous ReAct Agent ➔ Chuyển sang Fixed Deterministic Pipeline**: Agent tự do lập kế hoạch thường bị lạc hướng, suy diễn lung tung hoặc cố tình đọc chéo tài liệu. Với chính sách nhân sự và tuân thủ pháp lý, tính nhất quán (Consistency) và khả năng kiểm toán (Auditability) của Pipeline xác định quan trọng hơn tính linh hoạt khó đoán.
-* **Thay đổi 2: Tách biệt kiến trúc Frontend Next.js + Backend API FastAPI**: Thay vì dùng giao diện Streamlit nguyên khối, MVP đã tách biệt hoàn toàn Frontend (Next.js 14 App Router) và Backend API bảo mật qua Server-to-Server secret key, sẵn sàng triển khai Serverless trên Vercel.
-* **Thay đổi 3: Thay thế SSO thật bằng Synthetic Persona Selector**: Để tập trung tối đa nguồn lực chứng minh giả thuyết cốt lõi về phân quyền tri thức thay vì sa đà vào dựng hạ tầng IAM/AD phức tạp.
-
-### Câu hỏi 3: Trường hợp nào hiện khiến hệ thống dễ trả lời sai hoặc sử dụng sai tri thức nhất? Bạn phát hiện và kiểm soát rủi ro đó như thế nào?
-* **Trường hợp dễ sai lệch nhất**: **Truy vấn phức hợp đa chủ đề liên tài liệu (Composite Multi-Topic Query — Case TC-M2-07)**. Khi người dùng hỏi câu hỏi ghép (ví dụ vừa hỏi số ngày phép, vừa hỏi định mức WFH, vừa hỏi quy trình phê duyệt), pipeline đơn luồng gán nhãn câu hỏi vào một topic duy nhất (`leave_days`) và lọc bỏ các tài liệu còn lại, dẫn đến câu trả lời bị phiến diện.
-* **Cách phát hiện**: Sử dụng bộ kiểm thử đối kháng (Adversarial Test Suite) với các câu hỏi phức hợp đa chủ đề và đối soát ma trận tài liệu được cấp vào context.
-* **Kiểm soát rủi ro**: Áp dụng nguyên tắc *"Thà từ chối trung thực (ABSTAIN) còn hơn trả lời sai"*, ghi nhận audit trace đầy đủ và đặt ra lộ trình nâng cấp với **Query Decomposition Planner** trong Mission 3.
 
 ---
 
@@ -176,12 +188,3 @@ npm install
 npm run dev
 # Truy cập giao diện tại: http://localhost:3000
 ```
-
-*(Hoặc chạy giao diện Streamlit cổ điển: `streamlit run streamlit_app.py`)*
-
----
-
-## 🔒 AN TOÀN & BẢO MẬT DỮ LIỆU
-* **Zero Client-Side Leakage**: Giao diện người dùng tuyệt đối không hiển thị document ID nội bộ, mã phiên bản thô (`v1`, `v2`), trace debug hay thông báo lỗi hệ thống.
-* **Strict Source Alignment**: Mọi trích đoạn chính sách hiển thị trên UI bắt buộc phải khớp nguyên văn từng ký tự với tài liệu đã được cấp phép.
-* **Tamper-Proof Authorization**: Phân quyền được thực thi ở tầng dịch vụ backend bằng quy tắc tất định, ngăn chặn hoàn toàn các nỗ lực Prompt Injection hoặc vượt quyền qua giao diện.
