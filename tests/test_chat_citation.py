@@ -141,7 +141,8 @@ class ChatCitationTests(unittest.TestCase):
         self.assertEqual(messages[0]["content"], "Tôi có bao nhiêu ngày nghỉ phép?")
         self.assertEqual(messages[2]["content"], "Câu hỏi gây lỗi")
         self.assertEqual(messages[3]["status"], "ERROR")
-        self.assertIn("Simulated backend failure", messages[3]["content"])
+        self.assertEqual(messages[3]["content"], "Hiện chưa thể trả lời câu hỏi này. Vui lòng thử lại sau.")
+        self.assertNotIn("Simulated backend failure", messages[3]["content"])
 
     def test_html_escaping_safety(self):
         """Ensure malicious HTML/script injections are escaped."""
@@ -197,6 +198,31 @@ class ChatCitationTests(unittest.TestCase):
         self.assertIn("Leave is &lt;approved&gt;.", rendered_html)
         self.assertIn("4.1 Annual Leave", rendered_html)
         self.assertNotIn("<approved>", rendered_html)
+        self.assertNotIn("DOC-1", rendered_html)
+        self.assertNotIn("v2", rendered_html)
+
+    def test_answer_card_hides_internal_trace(self):
+        citation = Citation("SECRET-ID", "Quy định nghỉ phép", "v3", "Nghỉ phép", "15 ngày mỗi năm.")
+        message = {"status": "ANSWER", "content": "Bạn có 15 ngày nghỉ phép [1].",
+                   "citations": [citation], "trace": {"topic": "leave_days", "request_id": "private-debug-id"}}
+        with patch.object(app.st, "markdown") as mock_md:
+            app.render_assistant_message(message)
+        rendered = "".join(call.args[0] for call in mock_md.call_args_list)
+        self.assertIn("Quy định nghỉ phép", rendered)
+        self.assertIn("15 ngày mỗi năm.", rendered)
+        for internal_value in ("SECRET-ID", "v3", "leave_days", "private-debug-id", "Guard Pipeline"):
+            self.assertNotIn(internal_value, rendered)
+
+    def test_profile_uses_plain_role_and_hides_internal_codes(self):
+        user = next(u for u in self.seed["users"] if u["user_id"] == "U02")
+        with patch.object(app.st, "markdown") as mock_md:
+            app.render_compact_profile(user)
+        rendered = mock_md.call_args.args[0]
+        self.assertIn("Quản lý", rendered)
+        self.assertIn("Toàn thời gian", rendered)
+        self.assertNotIn("PEOPLE_MANAGER", rendered)
+        self.assertNotIn("FULL_TIME", rendered)
+        self.assertNotIn("U02", rendered)
 
 
 if __name__ == "__main__":

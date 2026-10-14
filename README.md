@@ -4,7 +4,7 @@ Prototype chứng minh rằng cùng một câu hỏi có thể dùng nguồn ch�
 
 ## Trạng thái triển khai
 
-Backend CLI, bộ kiểm thử và giao diện hội thoại đa lượt (Multi-Turn Chat with Citations) trên Streamlit (`app.py`) đã hoàn thành theo kế hoạch [chatbot-ui-citation-plan.md](docs/chatbot-ui-citation-plan.md). Hệ thống hỗ trợ trích dẫn nguồn (citations), hiển thị trạng thái xử lý (`ANSWER`, `ABSTAIN`, `CONFLICT`), audit trace bảo mật và cách ly ngữ cảnh người dùng. Cấu hình cục bộ dùng OpenRouter cho chat và embedding; chưa deploy.
+Backend CLI, bộ kiểm thử và giao diện hội thoại đa lượt trên Streamlit (`app.py`) đã hoàn thành theo kế hoạch [chatbot-ui-citation-plan.md](docs/chatbot-ui-citation-plan.md). Giao diện dùng lời dễ hiểu, hiển thị đoạn trích từ tài liệu và giữ chi tiết kiểm tra nội bộ ngoài phần người dùng nhìn thấy. Cấu hình cục bộ dùng OpenRouter cho chat và embedding; chưa deploy.
 
 ## Luồng xử lý
 
@@ -36,7 +36,7 @@ result = answer_question("U01", "Tôi có bao nhiêu ngày nghỉ phép?")
 print(result.status, result.answer, result.citations, result.trace)
 ```
 
-UI chỉ gửi `user_id` và `question`; backend tự lấy company/department/role từ seed. `AnswerResult` có `status`, `answer`, `citations`, `reason`, `trace`, hỗ trợ `to_dict()`. Mỗi citation hiện tên văn bản, phiên bản, mục và một đoạn trích nguyên văn từ đúng phiên bản được phép truy cập; giao diện không hiển thị JSON kỹ thuật khi xem dẫn chứng.
+UI chỉ gửi `user_id` và `question`; backend tự lấy company/department/role từ seed. `AnswerResult` có `status`, `answer`, `citations`, `reason`, `trace`, hỗ trợ `to_dict()`. Mỗi dẫn chứng trên giao diện hiện tên văn bản, mục và đoạn trích nguyên văn; mã tài liệu, phiên bản và chi tiết xử lý được giữ ở backend.
 
 ## Tùy chọn provider
 
@@ -71,4 +71,4 @@ MVP thu hẹp về ranh giới truy xuất có kiểm soát: synthetic identity,
 
 ## Bảo mật và đánh giá
 
-Không đưa tài liệu bị từ chối, draft hoặc version cũ vào LLM context. Citation phải đối chiếu với nguồn thực được cấp. Debug trace của demo chỉ công bố số lượng tài liệu bị chặn; production cần giới hạn trace theo quyền. Kiểm thử hiện có 9 unit/integration tests và 8 ca formal, trong đó T08 là thất bại quan sát được. Kết quả trên corpus giả lập nhỏ không phải cam kết độ tin cậy production.
+Không đưa tài liệu bị từ chối, draft hoặc version cũ vào LLM context. Citation phải đối chiếu với nguồn thực được cấp. Giao diện không hiển thị trace nội bộ; backend vẫn giữ trace để kiểm thử. Kết quả trên corpus giả lập nhỏ không phải cam kết độ tin cậy production.

@@ -5,6 +5,7 @@ Enterprise AI Assistant with Authorization-Aware Retrieval (RBAC) & Provenance C
 from __future__ import annotations
 
 import html
+import logging
 import streamlit as st
 
 from src.service import answer_question, list_demo_users
@@ -16,13 +17,14 @@ from src.ui.components import (
     render_assistant_card,
     render_status_badge,
     render_citation_cards,
-    render_audit_trace_expander,
     render_welcome_box,
 )
 
+logger = logging.getLogger(__name__)
+
 # Page configuration
 st.set_page_config(
-    page_title="Appota Knowledge Guard — Enterprise Knowledge Assistant",
+    page_title="Appota Knowledge Guard — Trợ lý chính sách",
     page_icon="🛡️",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -36,14 +38,15 @@ def load_users() -> list[dict]:
     """Load trusted synthetic demo users from backend."""
     try:
         return list_demo_users()
-    except Exception as e:
-        st.error(f"Lỗi khi tải danh sách người dùng: {e}")
+    except Exception:
+        logger.exception("Unable to load demo users")
+        st.error("Chưa thể tải danh sách người dùng. Vui lòng thử lại sau.")
         return []
 
 
 def format_user_label(user: dict) -> str:
     """Format user label for dropdown selector."""
-    return f"{user['user_id']} — {user['name']} ({user['company']} / {user['department']} / {user['role']})"
+    return f"{user['name']} — {user['company']} / {user['department']}"
 
 
 def init_session_state():
@@ -74,7 +77,7 @@ def render_sidebar(users: list[dict]) -> dict | None:
             <div style="font-size:1.5rem;">🛡️</div>
             <div>
                 <div style="font-weight:700; font-size:1.05rem; color:#FFFFFF; line-height:1.2;">Knowledge Guard</div>
-                <div style="font-size:0.75rem; color:#9CA3AF;">Enterprise Security AI</div>
+                <div style="font-size:0.75rem; color:#9CA3AF;">Trợ lý tra cứu chính sách</div>
             </div>
         </div>
         """,
@@ -92,7 +95,7 @@ def render_sidebar(users: list[dict]) -> dict | None:
         for t in titles[-4:]:
             st.sidebar.markdown(f'<div class="kg-history-item active">💬 {html.escape(t)}</div>', unsafe_allow_html=True)
 
-    st.sidebar.markdown('<div class="kg-sidebar-section-title">Định danh giả lập (Demo Identity)</div>', unsafe_allow_html=True)
+    st.sidebar.markdown('<div class="kg-sidebar-section-title">Người đang hỏi</div>', unsafe_allow_html=True)
 
     if not users:
         st.sidebar.warning("Không có dữ liệu người dùng.")
@@ -108,7 +111,7 @@ def render_sidebar(users: list[dict]) -> dict | None:
                 break
 
     selected_label = st.sidebar.selectbox(
-        "Chuyển đổi người dùng:",
+        "Chọn người hỏi:",
         user_labels,
         index=default_idx,
         key="user_selector",
@@ -128,15 +131,15 @@ def render_sidebar(users: list[dict]) -> dict | None:
     render_compact_profile(selected_user)
 
     # Preset / Evaluation Cases
-    st.sidebar.markdown('<div class="kg-sidebar-section-title">Trường hợp kiểm thử (Evaluation Cases)</div>', unsafe_allow_html=True)
-    st.sidebar.caption("Kiểm chứng hành vi truy xuất theo quyền và tính toán vẹn:")
+    st.sidebar.markdown('<div class="kg-sidebar-section-title">Câu hỏi gợi ý</div>', unsafe_allow_html=True)
+    st.sidebar.caption("Chọn một câu hỏi để bắt đầu:")
 
     preset_questions = [
-        ("Nghỉ phép năm (Alice 15 vs Carol 12)", "Tôi có bao nhiêu ngày nghỉ phép?"),
-        ("WFH ngày trong tuần (Alice 2 ngày)", "Tôi được WFH mấy ngày?"),
-        ("WFH thứ Sáu (Thiếu bằng chứng → ABSTAIN)", "Tôi có được WFH thứ Sáu không?"),
-        ("Lương HR (Chặn tài liệu mật → ABSTAIN)", "Chính sách lương của tôi là gì?"),
-        ("Phê duyệt phép (Quyền Manager)", "Quy trình phê duyệt nghỉ phép của quản lý như thế nào?"),
+        ("Tôi có bao nhiêu ngày nghỉ phép?", "Tôi có bao nhiêu ngày nghỉ phép?"),
+        ("Tôi được làm việc tại nhà mấy ngày?", "Tôi được làm việc tại nhà mấy ngày?"),
+        ("Tôi có được làm việc tại nhà thứ Sáu?", "Tôi có được làm việc tại nhà thứ Sáu không?"),
+        ("Chính sách lương của tôi là gì?", "Chính sách lương của tôi là gì?"),
+        ("Ai duyệt đơn nghỉ phép?", "Quy trình phê duyệt nghỉ phép của quản lý như thế nào?"),
     ]
 
     for title, q_text in preset_questions:
@@ -148,8 +151,7 @@ def render_sidebar(users: list[dict]) -> dict | None:
     st.sidebar.markdown(
         """
         <div style="font-size:0.72rem; color:#6B7280; text-align:center; line-height:1.4;">
-            Appota Knowledge Guard · RBAC Engine<br/>
-            Deterministic Guard + Extractive LLM
+            Bản thử nghiệm dùng dữ liệu giả lập.
         </div>
         """,
         unsafe_allow_html=True,
@@ -173,7 +175,7 @@ def render_status(message: dict):
         {badge_html}
     </div>
     <div class="kg-answer-body">{html.escape(answer)}</div>
-    <div class="kg-security-subtext">🛡️ {html.escape(desc_text)}</div>
+    <div class="kg-security-subtext">{html.escape(desc_text)}</div>
 </div>
 """).strip()
     st.markdown(raw_html, unsafe_allow_html=True)
@@ -184,18 +186,13 @@ def render_citations(citations: list):
     render_citation_cards(citations)
 
 
-def render_audit_trace(trace: dict):
-    """Render guard pipeline and audit trace in an expandable container."""
-    render_audit_trace_expander(trace)
-
-
 def render_user_message(message: dict):
     """Render a user query bubble."""
     render_user_bubble(message)
 
 
 def render_assistant_message(message: dict):
-    """Render an assistant response bubble containing status, inline citations, cards, and audit trace."""
+    """Render an assistant response and its source passages."""
     render_assistant_card(message)
 
 
@@ -232,7 +229,7 @@ def submit_question(question: str, user_id: str):
     })
 
     # Execute backend pipeline with security guarantee
-    with st.spinner("Đang kiểm tra quyền và tìm tài liệu..."):
+    with st.spinner("Đang tìm câu trả lời..."):
         try:
             result = answer_question(user_id, clean_q)
             st.session_state["chat_messages"].append({
@@ -242,17 +239,16 @@ def submit_question(question: str, user_id: str):
                 "citations": result.citations,
                 "reason": result.reason,
                 "trace": result.trace,
-                "request_id": result.trace.get("request_id") if result.trace else None,
             })
-        except Exception as e:
+        except Exception:
+            logger.exception("Question could not be answered")
             st.session_state["chat_messages"].append({
                 "role": "assistant",
-                "content": f"Đã xảy ra lỗi trong quá trình xử lý: {str(e)}",
+                "content": "Hiện chưa thể trả lời câu hỏi này. Vui lòng thử lại sau.",
                 "status": "ERROR",
                 "citations": [],
                 "reason": "internal_error",
                 "trace": {},
-                "request_id": None,
             })
 
 
@@ -260,7 +256,7 @@ def render_quick_action_chips():
     """Render quick suggestion action chips above input composer."""
     quick_items = [
         ("📅 Nghỉ phép năm", "Tôi có bao nhiêu ngày nghỉ phép?"),
-        ("🏠 Chính sách WFH", "Tôi được WFH mấy ngày?"),
+        ("🏠 Làm việc tại nhà", "Tôi được làm việc tại nhà mấy ngày?"),
         ("📋 Duyệt phép", "Quy trình phê duyệt nghỉ phép của quản lý như thế nào?"),
     ]
     cols = st.columns(len(quick_items))
@@ -302,7 +298,7 @@ def main():
     st.markdown('<div class="kg-bottom-spacer"></div>', unsafe_allow_html=True)
 
     # Fixed bottom chat input
-    user_input = st.chat_input("Nhập câu hỏi về chính sách doanh nghiệp (VD: Tôi có bao nhiêu ngày nghỉ phép?)...")
+    user_input = st.chat_input("Hỏi về chính sách dành cho bạn, ví dụ: Tôi có bao nhiêu ngày nghỉ phép?")
     if user_input:
         submit_question(user_input, user_id)
         st.rerun()
