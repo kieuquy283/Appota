@@ -65,7 +65,7 @@
                  [ Kết quả minh bạch ]
 ```
 
-### 👥 Tình huống bắt buộc: Cùng câu hỏi — Hai bối cảnh — Hai kết quả khác nhau
+### Tình huống bắt buộc: Cùng câu hỏi — Hai bối cảnh — Hai kết quả khác nhau
 Cùng đặt câu hỏi: *"Tôi có bao nhiêu ngày nghỉ phép?"*:
 * **Alice (`U01`)** — Kỹ sư tại **AlphaPay**: Hệ thống đối soát bối cảnh AlphaPay ➔ Cấp quyền đọc `ALPHA-LEAVE` ➔ Trả lời: **15 ngày nghỉ phép năm** (kèm trích dẫn chính sách hiện hành AlphaPay).
 * **Carol (`U03`)** — Chuyên viên tại **NovaGame**: Hệ thống đối soát bối cảnh NovaGame ➔ Cấp quyền đọc `NOVA-LEAVE` ➔ Trả lời: **12 ngày nghỉ phép năm** (kèm trích dẫn chính sách NovaGame).
@@ -84,7 +84,7 @@ Cùng đặt câu hỏi: *"Tôi có bao nhiêu ngày nghỉ phép?"*:
 
 ---
 
-## 🏢 MÔ PHỎNG CƠ CẤU TỔ CHỨC VÀ NHÂN VIÊN
+## MÔ PHỎNG CƠ CẤU TỔ CHỨC VÀ NHÂN VIÊN
 
 Để kiểm chứng tính cô lập dữ liệu và khả năng phân quyền đa cấp trong tập đoàn, hệ thống xây dựng mô hình dữ liệu giả lập chuẩn hóa (Synthetic Schema) tại [data/seed.json](data/seed.json):
 
@@ -126,19 +126,19 @@ Mỗi tài liệu trong kho tri thức đều được gắn thẻ metadata chu�
 
 ---
 
-## 🧪 BỘ KIỂM THỬ MISSION 2
+## BỘ KIỂM THỬ MISSION 2
 
 📄 *Chi tiết toàn văn 07 tình huống nghiệm thu xem tại: [docs/mission_2_test_evaluation.md](docs/mission_2_test_evaluation.md)*
 
 ---
 
-## ❓ 3 CÂU HỎI BẮT BUỘC
+## 3 CÂU HỎI BẮT BUỘC
 
 📄 *Chi tiết toàn văn bản luận giải xem tại: [docs/mission_2_mandatory_questions.md](docs/mission_2_mandatory_questions.md)*
 
 ---
 
-## 💻 KIẾN TRÚC & HƯỚNG DẪN KHỞI CHẠY
+## KIẾN TRÚC & HƯỚNG DẪN KHỞI CHẠY
 
 ### 1. Cấu trúc dự án
 ```
