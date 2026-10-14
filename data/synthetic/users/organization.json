@@ -1,0 +1,188 @@
+[
+  {
+    "id": "GROUP",
+    "name": "APPOTA GROUP — SYNTHETIC DEMO ONLY",
+    "unit_type": "GROUP",
+    "parent_id": null
+  },
+  {
+    "id": "AlphaPay",
+    "name": "AlphaPay",
+    "unit_type": "COMPANY",
+    "parent_id": "GROUP"
+  },
+  {
+    "id": "AlphaPay/Engineering",
+    "name": "Engineering",
+    "unit_type": "DEPARTMENT",
+    "parent_id": "AlphaPay"
+  },
+  {
+    "id": "AlphaPay/Engineering/Backend",
+    "name": "Backend",
+    "unit_type": "TEAM",
+    "parent_id": "AlphaPay/Engineering"
+  },
+  {
+    "id": "AlphaPay/Engineering/Mobile",
+    "name": "Mobile",
+    "unit_type": "TEAM",
+    "parent_id": "AlphaPay/Engineering"
+  },
+  {
+    "id": "AlphaPay/Product",
+    "name": "Product",
+    "unit_type": "DEPARTMENT",
+    "parent_id": "AlphaPay"
+  },
+  {
+    "id": "AlphaPay/Product/Payments",
+    "name": "Payments",
+    "unit_type": "TEAM",
+    "parent_id": "AlphaPay/Product"
+  },
+  {
+    "id": "AlphaPay/Finance",
+    "name": "Finance",
+    "unit_type": "DEPARTMENT",
+    "parent_id": "AlphaPay"
+  },
+  {
+    "id": "AlphaPay/Finance/Finance Operations",
+    "name": "Finance Operations",
+    "unit_type": "TEAM",
+    "parent_id": "AlphaPay/Finance"
+  },
+  {
+    "id": "AlphaPay/Finance/Accounting",
+    "name": "Accounting",
+    "unit_type": "TEAM",
+    "parent_id": "AlphaPay/Finance"
+  },
+  {
+    "id": "AlphaPay/HR",
+    "name": "HR",
+    "unit_type": "DEPARTMENT",
+    "parent_id": "AlphaPay"
+  },
+  {
+    "id": "AlphaPay/HR/People Operations",
+    "name": "People Operations",
+    "unit_type": "TEAM",
+    "parent_id": "AlphaPay/HR"
+  },
+  {
+    "id": "BetaGame",
+    "name": "BetaGame",
+    "unit_type": "COMPANY",
+    "parent_id": "GROUP"
+  },
+  {
+    "id": "BetaGame/Game Development",
+    "name": "Game Development",
+    "unit_type": "DEPARTMENT",
+    "parent_id": "BetaGame"
+  },
+  {
+    "id": "BetaGame/Game Development/Gameplay",
+    "name": "Gameplay",
+    "unit_type": "TEAM",
+    "parent_id": "BetaGame/Game Development"
+  },
+  {
+    "id": "BetaGame/Publishing",
+    "name": "Publishing",
+    "unit_type": "DEPARTMENT",
+    "parent_id": "BetaGame"
+  },
+  {
+    "id": "BetaGame/Publishing/Launch",
+    "name": "Launch",
+    "unit_type": "TEAM",
+    "parent_id": "BetaGame/Publishing"
+  },
+  {
+    "id": "BetaGame/Marketing",
+    "name": "Marketing",
+    "unit_type": "DEPARTMENT",
+    "parent_id": "BetaGame"
+  },
+  {
+    "id": "BetaGame/Marketing/Growth",
+    "name": "Growth",
+    "unit_type": "TEAM",
+    "parent_id": "BetaGame/Marketing"
+  },
+  {
+    "id": "BetaGame/HR",
+    "name": "HR",
+    "unit_type": "DEPARTMENT",
+    "parent_id": "BetaGame"
+  },
+  {
+    "id": "BetaGame/HR/People Operations",
+    "name": "People Operations",
+    "unit_type": "TEAM",
+    "parent_id": "BetaGame/HR"
+  },
+  {
+    "id": "CloudX",
+    "name": "CloudX",
+    "unit_type": "COMPANY",
+    "parent_id": "GROUP"
+  },
+  {
+    "id": "CloudX/Infrastructure",
+    "name": "Infrastructure",
+    "unit_type": "DEPARTMENT",
+    "parent_id": "CloudX"
+  },
+  {
+    "id": "CloudX/Infrastructure/Platform",
+    "name": "Platform",
+    "unit_type": "TEAM",
+    "parent_id": "CloudX/Infrastructure"
+  },
+  {
+    "id": "CloudX/Infrastructure/Network",
+    "name": "Network",
+    "unit_type": "TEAM",
+    "parent_id": "CloudX/Infrastructure"
+  },
+  {
+    "id": "CloudX/Security",
+    "name": "Security",
+    "unit_type": "DEPARTMENT",
+    "parent_id": "CloudX"
+  },
+  {
+    "id": "CloudX/Security/Detection",
+    "name": "Detection",
+    "unit_type": "TEAM",
+    "parent_id": "CloudX/Security"
+  },
+  {
+    "id": "CloudX/Sales",
+    "name": "Sales",
+    "unit_type": "DEPARTMENT",
+    "parent_id": "CloudX"
+  },
+  {
+    "id": "CloudX/Sales/Enterprise",
+    "name": "Enterprise",
+    "unit_type": "TEAM",
+    "parent_id": "CloudX/Sales"
+  },
+  {
+    "id": "CloudX/HR",
+    "name": "HR",
+    "unit_type": "DEPARTMENT",
+    "parent_id": "CloudX"
+  },
+  {
+    "id": "CloudX/HR/People Operations",
+    "name": "People Operations",
+    "unit_type": "TEAM",
+    "parent_id": "CloudX/HR"
+  }
+]

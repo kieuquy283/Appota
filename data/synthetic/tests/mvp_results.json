@@ -1,0 +1,715 @@
+{
+  "corpus": "APPOTA GROUP — SYNTHETIC DEMO ONLY",
+  "as_of": "2026-10-14",
+  "summary": {
+    "passed": 33,
+    "total": 60,
+    "by_tier": {
+      "success": {
+        "passed": 12,
+        "total": 22
+      },
+      "hard_ambiguous": {
+        "passed": 8,
+        "total": 19
+      },
+      "expected_failure": {
+        "passed": 13,
+        "total": 19
+      }
+    }
+  },
+  "cases": [
+    {
+      "id": "S01",
+      "tier": "success",
+      "pass": true,
+      "expected_status": "ANSWER",
+      "actual_status": "ANSWER",
+      "citations": [
+        "AP-HR-LEAVE-2026"
+      ],
+      "errors": []
+    },
+    {
+      "id": "S02",
+      "tier": "success",
+      "pass": true,
+      "expected_status": "ANSWER",
+      "actual_status": "ANSWER",
+      "citations": [
+        "BG-HR-LEAVE-2026"
+      ],
+      "errors": []
+    },
+    {
+      "id": "S03",
+      "tier": "success",
+      "pass": true,
+      "expected_status": "ANSWER",
+      "actual_status": "ANSWER",
+      "citations": [
+        "AP-HR-LEAVE-INTERN-2026"
+      ],
+      "errors": []
+    },
+    {
+      "id": "S04",
+      "tier": "success",
+      "pass": true,
+      "expected_status": "ANSWER",
+      "actual_status": "ANSWER",
+      "citations": [
+        "CX-HR-LEAVE-2026"
+      ],
+      "errors": []
+    },
+    {
+      "id": "S05",
+      "tier": "success",
+      "pass": true,
+      "expected_status": "ANSWER",
+      "actual_status": "ANSWER",
+      "citations": [
+        "AP-HR-CONTRACTOR-LEAVE"
+      ],
+      "errors": []
+    },
+    {
+      "id": "S06",
+      "tier": "success",
+      "pass": true,
+      "expected_status": "ANSWER",
+      "actual_status": "ANSWER",
+      "citations": [
+        "AP-ENG-REMOTE-2026"
+      ],
+      "errors": []
+    },
+    {
+      "id": "S07",
+      "tier": "success",
+      "pass": true,
+      "expected_status": "ANSWER",
+      "actual_status": "ANSWER",
+      "citations": [
+        "AP-FIN-REMOTE-2026"
+      ],
+      "errors": []
+    },
+    {
+      "id": "S08",
+      "tier": "success",
+      "pass": true,
+      "expected_status": "ANSWER",
+      "actual_status": "ANSWER",
+      "citations": [
+        "BG-REMOTE-2026"
+      ],
+      "errors": []
+    },
+    {
+      "id": "S09",
+      "tier": "success",
+      "pass": true,
+      "expected_status": "ABSTAIN",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": []
+    },
+    {
+      "id": "S10",
+      "tier": "success",
+      "pass": true,
+      "expected_status": "ABSTAIN",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": []
+    },
+    {
+      "id": "S11",
+      "tier": "success",
+      "pass": false,
+      "expected_status": "ANSWER",
+      "actual_status": "ANSWER",
+      "citations": [
+        "AP-HR-LEAVE-2026"
+      ],
+      "errors": [
+        "expected value absent from answer"
+      ]
+    },
+    {
+      "id": "S12",
+      "tier": "success",
+      "pass": false,
+      "expected_status": "ANSWER",
+      "actual_status": "ANSWER",
+      "citations": [
+        "AP-HR-LEAVE-MANAGER-2026"
+      ],
+      "errors": [
+        "expected value absent from answer"
+      ]
+    },
+    {
+      "id": "H01",
+      "tier": "hard_ambiguous",
+      "pass": false,
+      "expected_status": "CONFLICT",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": [
+        "status=ABSTAIN, expected=CONFLICT",
+        "missing expected citation"
+      ]
+    },
+    {
+      "id": "H02",
+      "tier": "hard_ambiguous",
+      "pass": true,
+      "expected_status": "ABSTAIN",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": []
+    },
+    {
+      "id": "H03",
+      "tier": "hard_ambiguous",
+      "pass": true,
+      "expected_status": "ABSTAIN",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": []
+    },
+    {
+      "id": "H04",
+      "tier": "hard_ambiguous",
+      "pass": false,
+      "expected_status": "ANSWER",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": [
+        "status=ABSTAIN, expected=ANSWER",
+        "missing expected citation",
+        "expected value absent from answer",
+        "answer has no citation"
+      ]
+    },
+    {
+      "id": "H05",
+      "tier": "hard_ambiguous",
+      "pass": false,
+      "expected_status": "ANSWER",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": [
+        "status=ABSTAIN, expected=ANSWER",
+        "missing expected citation",
+        "expected value absent from answer",
+        "answer has no citation"
+      ]
+    },
+    {
+      "id": "H06",
+      "tier": "hard_ambiguous",
+      "pass": false,
+      "expected_status": "ANSWER",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": [
+        "status=ABSTAIN, expected=ANSWER",
+        "missing expected citation",
+        "expected value absent from answer",
+        "answer has no citation"
+      ]
+    },
+    {
+      "id": "F01",
+      "tier": "expected_failure",
+      "pass": false,
+      "expected_status": "ABSTAIN",
+      "actual_status": "ANSWER",
+      "citations": [
+        "CX-HR-LEAVE-2026"
+      ],
+      "errors": [
+        "status=ANSWER, expected=ABSTAIN",
+        "abstention contains a citation",
+        "forbidden source used: CX-HR-LEAVE-2026"
+      ]
+    },
+    {
+      "id": "F02",
+      "tier": "expected_failure",
+      "pass": false,
+      "expected_status": "ABSTAIN",
+      "actual_status": "ANSWER",
+      "citations": [
+        "AP-HR-LEAVE-2026"
+      ],
+      "errors": [
+        "status=ANSWER, expected=ABSTAIN",
+        "abstention contains a citation",
+        "forbidden source used: AP-HR-LEAVE-2026"
+      ]
+    },
+    {
+      "id": "F03",
+      "tier": "expected_failure",
+      "pass": true,
+      "expected_status": "ABSTAIN",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": []
+    },
+    {
+      "id": "F04",
+      "tier": "expected_failure",
+      "pass": false,
+      "expected_status": "ABSTAIN",
+      "actual_status": "ANSWER",
+      "citations": [
+        "BG-HR-LEAVE-2026"
+      ],
+      "errors": [
+        "status=ANSWER, expected=ABSTAIN",
+        "abstention contains a citation"
+      ]
+    },
+    {
+      "id": "F05",
+      "tier": "expected_failure",
+      "pass": true,
+      "expected_status": "ABSTAIN",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": []
+    },
+    {
+      "id": "S13",
+      "tier": "success",
+      "pass": true,
+      "expected_status": "ANSWER",
+      "actual_status": "ANSWER",
+      "citations": [
+        "AP-HR-SALARY-BANDS"
+      ],
+      "errors": []
+    },
+    {
+      "id": "S14",
+      "tier": "success",
+      "pass": true,
+      "expected_status": "ANSWER",
+      "actual_status": "ANSWER",
+      "citations": [
+        "AP-HR-SALARY-BANDS"
+      ],
+      "errors": []
+    },
+    {
+      "id": "S15",
+      "tier": "success",
+      "pass": false,
+      "expected_status": "ANSWER",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": [
+        "status=ABSTAIN, expected=ANSWER",
+        "missing expected citation",
+        "answer has no citation"
+      ]
+    },
+    {
+      "id": "S16",
+      "tier": "success",
+      "pass": false,
+      "expected_status": "ANSWER",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": [
+        "status=ABSTAIN, expected=ANSWER",
+        "missing expected citation",
+        "answer has no citation"
+      ]
+    },
+    {
+      "id": "S17",
+      "tier": "success",
+      "pass": false,
+      "expected_status": "ANSWER",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": [
+        "status=ABSTAIN, expected=ANSWER",
+        "missing expected citation",
+        "expected value absent from answer",
+        "answer has no citation"
+      ]
+    },
+    {
+      "id": "S18",
+      "tier": "success",
+      "pass": false,
+      "expected_status": "ANSWER",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": [
+        "status=ABSTAIN, expected=ANSWER",
+        "missing expected citation",
+        "answer has no citation"
+      ]
+    },
+    {
+      "id": "S19",
+      "tier": "success",
+      "pass": false,
+      "expected_status": "ANSWER",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": [
+        "status=ABSTAIN, expected=ANSWER",
+        "missing expected citation",
+        "answer has no citation"
+      ]
+    },
+    {
+      "id": "S20",
+      "tier": "success",
+      "pass": false,
+      "expected_status": "ANSWER",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": [
+        "status=ABSTAIN, expected=ANSWER",
+        "missing expected citation",
+        "answer has no citation"
+      ]
+    },
+    {
+      "id": "S21",
+      "tier": "success",
+      "pass": false,
+      "expected_status": "ANSWER",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": [
+        "status=ABSTAIN, expected=ANSWER",
+        "missing expected citation",
+        "expected value absent from answer",
+        "answer has no citation"
+      ]
+    },
+    {
+      "id": "H07",
+      "tier": "hard_ambiguous",
+      "pass": false,
+      "expected_status": "CONFLICT",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": [
+        "status=ABSTAIN, expected=CONFLICT",
+        "missing expected citation"
+      ]
+    },
+    {
+      "id": "H08",
+      "tier": "hard_ambiguous",
+      "pass": true,
+      "expected_status": "ABSTAIN",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": []
+    },
+    {
+      "id": "H09",
+      "tier": "hard_ambiguous",
+      "pass": true,
+      "expected_status": "ABSTAIN",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": []
+    },
+    {
+      "id": "H10",
+      "tier": "hard_ambiguous",
+      "pass": true,
+      "expected_status": "ABSTAIN",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": []
+    },
+    {
+      "id": "F06",
+      "tier": "expected_failure",
+      "pass": true,
+      "expected_status": "ABSTAIN",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": []
+    },
+    {
+      "id": "F07",
+      "tier": "expected_failure",
+      "pass": true,
+      "expected_status": "ABSTAIN",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": []
+    },
+    {
+      "id": "F08",
+      "tier": "expected_failure",
+      "pass": true,
+      "expected_status": "ABSTAIN",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": []
+    },
+    {
+      "id": "F09",
+      "tier": "expected_failure",
+      "pass": false,
+      "expected_status": "ANSWER",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": [
+        "status=ABSTAIN, expected=ANSWER",
+        "missing expected citation",
+        "expected value absent from answer",
+        "answer has no citation"
+      ]
+    },
+    {
+      "id": "F10",
+      "tier": "expected_failure",
+      "pass": false,
+      "expected_status": "ANSWER",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": [
+        "status=ABSTAIN, expected=ANSWER",
+        "missing expected citation",
+        "expected value absent from answer",
+        "answer has no citation"
+      ]
+    },
+    {
+      "id": "F11",
+      "tier": "expected_failure",
+      "pass": true,
+      "expected_status": "ANSWER",
+      "actual_status": "ANSWER",
+      "citations": [
+        "AP-HR-LEAVE-2026"
+      ],
+      "errors": []
+    },
+    {
+      "id": "F18",
+      "tier": "expected_failure",
+      "pass": false,
+      "expected_status": "ABSTAIN",
+      "actual_status": "ANSWER",
+      "citations": [
+        "GRP-REMOTE-GUIDE"
+      ],
+      "errors": [
+        "status=ANSWER, expected=ABSTAIN",
+        "abstention contains a citation",
+        "forbidden source used: GRP-REMOTE-GUIDE"
+      ]
+    },
+    {
+      "id": "S22",
+      "tier": "success",
+      "pass": false,
+      "expected_status": "ANSWER",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": [
+        "status=ABSTAIN, expected=ANSWER",
+        "missing expected citation",
+        "expected value absent from answer",
+        "answer has no citation"
+      ]
+    },
+    {
+      "id": "F19",
+      "tier": "expected_failure",
+      "pass": true,
+      "expected_status": "ABSTAIN",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": []
+    },
+    {
+      "id": "H11",
+      "tier": "hard_ambiguous",
+      "pass": true,
+      "expected_status": "ABSTAIN",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": []
+    },
+    {
+      "id": "H12",
+      "tier": "hard_ambiguous",
+      "pass": true,
+      "expected_status": "ABSTAIN",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": []
+    },
+    {
+      "id": "H13",
+      "tier": "hard_ambiguous",
+      "pass": false,
+      "expected_status": "ANSWER",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": [
+        "status=ABSTAIN, expected=ANSWER",
+        "missing expected citation",
+        "expected value absent from answer",
+        "answer has no citation"
+      ]
+    },
+    {
+      "id": "H14",
+      "tier": "hard_ambiguous",
+      "pass": false,
+      "expected_status": "ANSWER",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": [
+        "status=ABSTAIN, expected=ANSWER",
+        "missing expected citation",
+        "expected value absent from answer",
+        "answer has no citation"
+      ]
+    },
+    {
+      "id": "H15",
+      "tier": "hard_ambiguous",
+      "pass": false,
+      "expected_status": "ANSWER",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": [
+        "status=ABSTAIN, expected=ANSWER",
+        "missing expected citation",
+        "expected value absent from answer",
+        "answer has no citation"
+      ]
+    },
+    {
+      "id": "H16",
+      "tier": "hard_ambiguous",
+      "pass": false,
+      "expected_status": "ANSWER",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": [
+        "status=ABSTAIN, expected=ANSWER",
+        "missing expected citation",
+        "expected value absent from answer",
+        "answer has no citation"
+      ]
+    },
+    {
+      "id": "H17",
+      "tier": "hard_ambiguous",
+      "pass": false,
+      "expected_status": "ANSWER",
+      "actual_status": "ANSWER",
+      "citations": [
+        "AP-MGR-APPROVAL-2026"
+      ],
+      "errors": [
+        "missing expected citation",
+        "expected value absent from answer"
+      ]
+    },
+    {
+      "id": "F12",
+      "tier": "expected_failure",
+      "pass": true,
+      "expected_status": "ABSTAIN",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": []
+    },
+    {
+      "id": "F13",
+      "tier": "expected_failure",
+      "pass": true,
+      "expected_status": "ABSTAIN",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": []
+    },
+    {
+      "id": "F14",
+      "tier": "expected_failure",
+      "pass": true,
+      "expected_status": "ABSTAIN",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": []
+    },
+    {
+      "id": "F15",
+      "tier": "expected_failure",
+      "pass": true,
+      "expected_status": "ABSTAIN",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": []
+    },
+    {
+      "id": "F16",
+      "tier": "expected_failure",
+      "pass": true,
+      "expected_status": "ABSTAIN",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": []
+    },
+    {
+      "id": "F17",
+      "tier": "expected_failure",
+      "pass": true,
+      "expected_status": "ABSTAIN",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": []
+    },
+    {
+      "id": "H18",
+      "tier": "hard_ambiguous",
+      "pass": false,
+      "expected_status": "ANSWER",
+      "actual_status": "ABSTAIN",
+      "citations": [],
+      "errors": [
+        "status=ABSTAIN, expected=ANSWER",
+        "missing expected citation",
+        "expected value absent from answer",
+        "answer has no citation"
+      ]
+    },
+    {
+      "id": "H19",
+      "tier": "hard_ambiguous",
+      "pass": true,
+      "expected_status": "ANSWER",
+      "actual_status": "ANSWER",
+      "citations": [
+        "AP-HR-LEAVE-2026"
+      ],
+      "errors": []
+    }
+  ]
+}

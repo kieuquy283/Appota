@@ -1,0 +1,64 @@
+{
+  "id": "AP-EXPENSE-APPROVAL-MGR",
+  "title": "AlphaPay Expense Approval: Managers",
+  "topic": "expense_approval",
+  "authority": "OFFICIAL_POLICY",
+  "access": [
+    {
+      "effect": "ALLOW",
+      "company": "AlphaPay",
+      "department": "*",
+      "team": "*",
+      "role": "PEOPLE_MANAGER"
+    }
+  ],
+  "applicability": {
+    "company": "AlphaPay",
+    "department": "*",
+    "team": "*",
+    "role": "PEOPLE_MANAGER"
+  },
+  "versions": [
+    {
+      "version": "v1",
+      "status": "APPROVED",
+      "from": "2026-01-01",
+      "to": null,
+      "value": "director above 10000000 VND",
+      "content": "1. Purpose and status. AlphaPay Expense Approval: Managers is fictional demonstration material. It records a rule for AlphaPay dated 2026-01-01; the version status is held in the document registry. The precise entitlement or instruction appears in section 3.1 Approval threshold. Staff should not infer an unstated allowance, rate, weekday, or exception from this document.\n\n2. Scope and eligibility. This document applies only to the organizational scope and employment categories recorded in its metadata. A matching topic or title does not grant access. The trusted personnel profile determines company, department, team, role, level, and employment type. A worker outside that scope should use their own authorized policy or ask the policy owner through an approved channel.\n\n3. 3.1 Approval threshold. A people manager must obtain Director approval before submitting a claim above 10,000,000 VND. A manager cannot approve their own reimbursement request. This rule is stated for the synthetic policy year shown in the metadata. When another company, department, or team publishes a more specific applicable policy, the reader must use the authorized policy with the correct authority and effective date. Similar wording in a handbook or FAQ is not a replacement for an approved policy.\n\n4. Request and approval. The employee submits any required request through the fictional internal workflow before relying on an approval. The responsible manager or designated owner checks eligibility, timing, and supporting records. An approval step does not change a numeric entitlement. The employee should retain the request identifier and the final decision for later review.\n\n5. Exceptions and unresolved questions. This document does not create exceptions by implication. If the rule lacks a necessary figure, deadline, location, or weekday, the answer is unknown from this source. Conflicting current documents of equal authority require owner review; a reader should not choose whichever number is more favorable. Draft and expired versions are not current instructions.\n\n6. Records and handling. Keep the policy ID, version, and section with an approval record so the decision can be reviewed later. Restricted records are shared only with the audience named in the document registry.\n\n7. Ownership and review. The fictional AlphaPay policy owner reviews this rule after organizational or legal changes and publishes a dated replacement if needed. Until then, staff should ask the owner for cases not covered here. This document includes no real Appota customer, employee, financial, or security data.",
+      "section": "3.1 Approval threshold",
+      "supersedes": null
+    }
+  ],
+  "metadata": {
+    "document_id": "AP-EXPENSE-APPROVAL-MGR",
+    "title": "AlphaPay Expense Approval: Managers",
+    "company": "AlphaPay",
+    "department": "*",
+    "team": "*",
+    "allowed_roles": [
+      "PEOPLE_MANAGER"
+    ],
+    "allowed_levels": [
+      "Manager"
+    ],
+    "allowed_employment_types": [
+      "FULL_TIME"
+    ],
+    "confidentiality": "INTERNAL",
+    "owner": "AlphaPay",
+    "access_scope": {
+      "company": "AlphaPay",
+      "department": "*",
+      "team": "*",
+      "role": "PEOPLE_MANAGER"
+    },
+    "supersedes": null,
+    "version": "v1",
+    "document_status": "APPROVED",
+    "status": "ACTIVE",
+    "effective_date": "2026-01-01",
+    "expiry_date": null,
+    "note": "Fictional QA material; never a real Appota policy."
+  }
+}

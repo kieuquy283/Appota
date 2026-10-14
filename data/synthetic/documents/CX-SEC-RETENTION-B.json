@@ -1,0 +1,74 @@
+{
+  "id": "CX-SEC-RETENTION-B",
+  "title": "CloudX Log Retention Policy B",
+  "topic": "log_retention",
+  "authority": "OFFICIAL_POLICY",
+  "access": [
+    {
+      "effect": "ALLOW",
+      "company": "CloudX",
+      "department": "Security",
+      "team": "*",
+      "role": "EMPLOYEE"
+    }
+  ],
+  "applicability": {
+    "company": "CloudX",
+    "department": "Security",
+    "team": "*",
+    "role": "EMPLOYEE"
+  },
+  "versions": [
+    {
+      "version": "v1",
+      "status": "APPROVED",
+      "from": "2026-01-01",
+      "to": null,
+      "value": "180 days",
+      "content": "1. Purpose and status. CloudX Log Retention Policy B is fictional demonstration material. It records a rule for CloudX, Security dated 2026-01-01; the version status is held in the document registry. The precise entitlement or instruction appears in section Retention. Staff should not infer an unstated allowance, rate, weekday, or exception from this document.\n\n2. Scope and eligibility. This document applies only to the organizational scope and employment categories recorded in its metadata. A matching topic or title does not grant access. The trusted personnel profile determines company, department, team, role, level, and employment type. A worker outside that scope should use their own authorized policy or ask the policy owner through an approved channel.\n\n3. Retention. Official policy B requires one hundred eighty days of standard security log retention. It has the same authority and effective date as policy A. This rule is stated for the synthetic policy year shown in the metadata. When another company, department, or team publishes a more specific applicable policy, the reader must use the authorized policy with the correct authority and effective date. Similar wording in a handbook or FAQ is not a replacement for an approved policy.\n\n4. Request and approval. The employee submits any required request through the fictional internal workflow before relying on an approval. The responsible manager or designated owner checks eligibility, timing, and supporting records. An approval step does not change a numeric entitlement. The employee should retain the request identifier and the final decision for later review.\n\n5. Exceptions and unresolved questions. This document does not create exceptions by implication. If the rule lacks a necessary figure, deadline, location, or weekday, the answer is unknown from this source. Conflicting current documents of equal authority require owner review; a reader should not choose whichever number is more favorable. Draft and expired versions are not current instructions.\n\n6. Records and handling. Keep the policy ID, version, and section with an approval record so the decision can be reviewed later. Restricted records are shared only with the audience named in the document registry.\n\n7. Ownership and review. The fictional CloudX policy owner reviews this rule after organizational or legal changes and publishes a dated replacement if needed. Until then, staff should ask the owner for cases not covered here. This document includes no real Appota customer, employee, financial, or security data.",
+      "section": "Retention",
+      "supersedes": null
+    }
+  ],
+  "metadata": {
+    "document_id": "CX-SEC-RETENTION-B",
+    "title": "CloudX Log Retention Policy B",
+    "company": "CloudX",
+    "department": "Security",
+    "team": "*",
+    "allowed_roles": [
+      "EMPLOYEE"
+    ],
+    "allowed_levels": [
+      "L1",
+      "L2",
+      "L3",
+      "L4",
+      "L5",
+      "Manager",
+      "Director"
+    ],
+    "allowed_employment_types": [
+      "FULL_TIME",
+      "PART_TIME",
+      "INTERN",
+      "CONTRACTOR",
+      "PROBATION"
+    ],
+    "confidentiality": "INTERNAL",
+    "owner": "CloudX",
+    "access_scope": {
+      "company": "CloudX",
+      "department": "Security",
+      "team": "*",
+      "role": "EMPLOYEE"
+    },
+    "supersedes": null,
+    "version": "v1",
+    "document_status": "APPROVED",
+    "status": "ACTIVE",
+    "effective_date": "2026-01-01",
+    "expiry_date": null,
+    "note": "Fictional QA material; never a real Appota policy."
+  }
+}
