@@ -7,7 +7,7 @@ from unittest.mock import patch, MagicMock
 from src.models import AnswerResult, Citation
 from src.service import answer_question, list_demo_users
 from src.store import load_seed
-import app
+import streamlit_app as app
 
 
 class ChatCitationTests(unittest.TestCase):
@@ -133,7 +133,7 @@ class ChatCitationTests(unittest.TestCase):
         app.submit_question("Tôi có bao nhiêu ngày nghỉ phép?", "U01")
         self.assertEqual(len(app.st.session_state["chat_messages"]), 2)
 
-        with patch("app.answer_question", side_effect=RuntimeError("Simulated backend failure")):
+        with patch("streamlit_app.answer_question", side_effect=RuntimeError("Simulated backend failure")):
             app.submit_question("Câu hỏi gây lỗi", "U01")
 
         messages = app.st.session_state["chat_messages"]
