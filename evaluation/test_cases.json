@@ -1,0 +1,10 @@
+[
+  {"id":"T01","name":"Normal answer","user_id":"U01","question":"Tôi có bao nhiêu ngày nghỉ phép?","expected_status":"ANSWER","expected_source":"ALPHA-LEAVE"},
+  {"id":"T02","name":"Same query, different context","user_id":"U03","question":"Tôi có bao nhiêu ngày nghỉ phép?","expected_status":"ANSWER","expected_source":"NOVA-LEAVE"},
+  {"id":"T03","name":"Unauthorized HR source","user_id":"U01","question":"Chính sách lương của tôi là gì?","expected_status":"ABSTAIN","forbidden_source":"ALPHA-HR-COMPENSATION"},
+  {"id":"T04","name":"Current version","user_id":"U01","question":"Tôi có bao nhiêu ngày nghỉ phép?","expected_status":"ANSWER","expected_version":"v3"},
+  {"id":"T05","name":"Authority beats FAQ","user_id":"U01","question":"Tôi được WFH mấy ngày?","expected_status":"ANSWER","expected_source":"ALPHA-WFH-POLICY"},
+  {"id":"T06","name":"Equal authority conflict","user_id":"U03","question":"Tôi được WFH mấy ngày?","expected_status":"CONFLICT"},
+  {"id":"T07","name":"Missing weekday evidence","user_id":"U01","question":"Tôi có được WFH thứ Sáu không?","expected_status":"ABSTAIN"},
+  {"id":"T08","name":"Observed paraphrase limitation","user_id":"U01","question":"Số ngày nghỉ hằng năm của tôi là bao nhiêu?","expected_status":"ANSWER","expected_source":"ALPHA-LEAVE"}
+]

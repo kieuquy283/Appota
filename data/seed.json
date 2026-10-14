@@ -1,0 +1,41 @@
+{
+  "disclaimer": "All organizations, people and policies in this file are synthetic demo data.",
+  "org_units": [
+    {"id":"GROUP","name":"Appota Demo Group","unit_type":"GROUP","parent_id":null,"path":"GROUP"},
+    {"id":"ALPHA","name":"AlphaPay","unit_type":"COMPANY","parent_id":"GROUP","path":"GROUP/ALPHA"},
+    {"id":"ALPHA-ENG","name":"Engineering","unit_type":"DEPARTMENT","parent_id":"ALPHA","path":"GROUP/ALPHA/ALPHA-ENG"},
+    {"id":"ALPHA-BACKEND","name":"Backend","unit_type":"TEAM","parent_id":"ALPHA-ENG","path":"GROUP/ALPHA/ALPHA-ENG/ALPHA-BACKEND"},
+    {"id":"ALPHA-PLATFORM","name":"Platform","unit_type":"TEAM","parent_id":"ALPHA-ENG","path":"GROUP/ALPHA/ALPHA-ENG/ALPHA-PLATFORM"},
+    {"id":"ALPHA-HR","name":"HR","unit_type":"DEPARTMENT","parent_id":"ALPHA","path":"GROUP/ALPHA/ALPHA-HR"},
+    {"id":"ALPHA-HR-OPS","name":"HR Ops","unit_type":"TEAM","parent_id":"ALPHA-HR","path":"GROUP/ALPHA/ALPHA-HR/ALPHA-HR-OPS"},
+    {"id":"NOVA","name":"NovaGame","unit_type":"COMPANY","parent_id":"GROUP","path":"GROUP/NOVA"},
+    {"id":"NOVA-ENG","name":"Engineering","unit_type":"DEPARTMENT","parent_id":"NOVA","path":"GROUP/NOVA/NOVA-ENG"},
+    {"id":"NOVA-CORE","name":"Core","unit_type":"TEAM","parent_id":"NOVA-ENG","path":"GROUP/NOVA/NOVA-ENG/NOVA-CORE"},
+    {"id":"NOVA-MARKETING","name":"Marketing","unit_type":"DEPARTMENT","parent_id":"NOVA","path":"GROUP/NOVA/NOVA-MARKETING"},
+    {"id":"NOVA-GROWTH","name":"Growth","unit_type":"TEAM","parent_id":"NOVA-MARKETING","path":"GROUP/NOVA/NOVA-MARKETING/NOVA-GROWTH"}
+  ],
+  "users": [
+    {"user_id":"U01","name":"Alice","company":"AlphaPay","department":"Engineering","team":"Backend","role":"EMPLOYEE","level":3,"employment_type":"FULL_TIME","active":true},
+    {"user_id":"U02","name":"Bob","company":"AlphaPay","department":"Engineering","team":"Backend","role":"PEOPLE_MANAGER","level":5,"employment_type":"FULL_TIME","active":true},
+    {"user_id":"U03","name":"Carol","company":"NovaGame","department":"Engineering","team":"Core","role":"EMPLOYEE","level":3,"employment_type":"FULL_TIME","active":true},
+    {"user_id":"U04","name":"David","company":"NovaGame","department":"Marketing","team":"Growth","role":"EMPLOYEE","level":2,"employment_type":"FULL_TIME","active":true},
+    {"user_id":"U05","name":"Helen","company":"AlphaPay","department":"HR","team":"HR Ops","role":"HR","level":4,"employment_type":"FULL_TIME","active":true},
+    {"user_id":"U06","name":"Frank","company":"AlphaPay","department":"Engineering","team":"Platform","role":"EMPLOYEE","level":1,"employment_type":"FULL_TIME","active":true}
+  ],
+  "documents": [
+    {"id":"GROUP-LEAVE","title":"Demo Group Annual Leave Baseline","authority":"GUIDELINE","topic":"leave_days","access":[{"effect":"ALLOW","company":"*"}],"applicability":{},"versions":[{"version":"v1","status":"APPROVED","from":"2026-01-01","to":null,"section":"Annual leave","value":"10 days/year","content":"Synthetic group baseline: full-time employees receive at least 10 annual leave days per year."}]},
+    {"id":"ALPHA-LEAVE","title":"AlphaPay Annual Leave Policy","authority":"OFFICIAL_POLICY","topic":"leave_days","access":[{"effect":"ALLOW","company":"AlphaPay"}],"applicability":{"company":"AlphaPay"},"versions":[
+      {"version":"v1","status":"APPROVED","from":"2024-01-01","to":"2025-01-01","section":"Annual leave","value":"12 days/year","content":"Synthetic AlphaPay old leave policy: 12 annual leave days per year."},
+      {"version":"v2","status":"APPROVED","from":"2025-01-01","to":"2026-01-01","section":"Annual leave","value":"13 days/year","content":"Synthetic AlphaPay old leave policy: 13 annual leave days per year."},
+      {"version":"v3","status":"APPROVED","from":"2026-01-01","to":null,"section":"Annual leave","value":"15 days/year","content":"Synthetic AlphaPay current policy: full-time employees receive 15 annual leave days per year."},
+      {"version":"v4-draft","status":"DRAFT","from":"2026-01-01","to":null,"section":"Annual leave","value":"20 days/year","content":"Draft only: 20 annual leave days per year."}
+    ]},
+    {"id":"NOVA-LEAVE","title":"NovaGame Annual Leave Policy","authority":"OFFICIAL_POLICY","topic":"leave_days","access":[{"effect":"ALLOW","company":"NovaGame"}],"applicability":{"company":"NovaGame"},"versions":[{"version":"v1","status":"APPROVED","from":"2026-01-01","to":null,"section":"Annual leave","value":"12 days/year","content":"Synthetic NovaGame current policy: full-time employees receive 12 annual leave days per year."}]},
+    {"id":"ALPHA-MANAGER-LEAVE-APPROVAL","title":"AlphaPay Manager Leave Approval Procedure","authority":"APPROVED_PROCEDURE","topic":"leave_approval","access":[{"effect":"ALLOW","company":"AlphaPay","role":"PEOPLE_MANAGER"}],"applicability":{"company":"AlphaPay","role":"PEOPLE_MANAGER"},"versions":[{"version":"v1","status":"APPROVED","from":"2026-01-01","to":null,"section":"Approval","value":"manager approves","content":"Synthetic procedure: people managers approve leave requests for their team."}]},
+    {"id":"ALPHA-HR-COMPENSATION","title":"AlphaPay HR Compensation Guide","authority":"OFFICIAL_POLICY","topic":"compensation","access":[{"effect":"ALLOW","company":"AlphaPay","role":"HR"}],"applicability":{"company":"AlphaPay","role":"HR"},"versions":[{"version":"v1","status":"APPROVED","from":"2026-01-01","to":null,"section":"Compensation","value":"HR only","content":"Synthetic confidential guide: HR administers compensation bands."}]},
+    {"id":"ALPHA-WFH-POLICY","title":"AlphaPay Remote Work Policy","authority":"OFFICIAL_POLICY","topic":"wfh_days","access":[{"effect":"ALLOW","company":"AlphaPay"}],"applicability":{"company":"AlphaPay"},"versions":[{"version":"v1","status":"APPROVED","from":"2026-01-01","to":null,"section":"Weekly limit","value":"2 days/week","content":"Synthetic AlphaPay policy: employees may work from home up to 2 days per week. The policy does not state which weekdays are permitted."}]},
+    {"id":"ALPHA-WFH-FAQ","title":"AlphaPay Remote Work FAQ","authority":"FAQ","topic":"wfh_days","access":[{"effect":"ALLOW","company":"AlphaPay"}],"applicability":{"company":"AlphaPay"},"versions":[{"version":"v1","status":"APPROVED","from":"2026-01-01","to":null,"section":"Weekly limit","value":"4 days/week","content":"Synthetic FAQ says up to 4 WFH days per week, contradicting the official policy."}]},
+    {"id":"NOVA-WFH-POLICY-A","title":"NovaGame Remote Work Policy A","authority":"OFFICIAL_POLICY","topic":"wfh_days","access":[{"effect":"ALLOW","company":"NovaGame"}],"applicability":{"company":"NovaGame"},"versions":[{"version":"v1","status":"APPROVED","from":"2026-01-01","to":null,"section":"Weekly limit","value":"2 days/week","content":"Synthetic NovaGame official policy A: maximum 2 WFH days per week."}]},
+    {"id":"NOVA-WFH-POLICY-B","title":"NovaGame Remote Work Policy B","authority":"OFFICIAL_POLICY","topic":"wfh_days","access":[{"effect":"ALLOW","company":"NovaGame"}],"applicability":{"company":"NovaGame"},"versions":[{"version":"v1","status":"APPROVED","from":"2026-01-01","to":null,"section":"Weekly limit","value":"3 days/week","content":"Synthetic NovaGame official policy B: maximum 3 WFH days per week."}]}
+  ]
+}
