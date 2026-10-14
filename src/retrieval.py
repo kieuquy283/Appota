@@ -9,6 +9,8 @@ from collections import Counter
 from functools import lru_cache
 from urllib import request
 
+from .citations import source_excerpt
+
 
 def _normalize(text: str) -> str:
     text = unicodedata.normalize("NFD", text.lower())
@@ -52,6 +54,11 @@ def _api_embedding(text: str, model: str, base: str, key: str) -> tuple[float, .
         return tuple(json.load(response)["data"][0]["embedding"])
 
 
+def _embedding_document_text(source: dict) -> str:
+    """Keep policy embedding input within the LFM model's 512-token window."""
+    return f"{source['title']}\n{source_excerpt(source, limit=600)}"
+
+
 def _dense_cosine(a: tuple[float, ...], b: tuple[float, ...]) -> float:
     if len(a) != len(b) or not a:
         raise ValueError("Invalid embedding dimensions")
@@ -64,10 +71,10 @@ def retrieve(question: str, eligible: list[dict], topic: str | None, top_k: int 
         return []
     candidates = [x for x in eligible if x["topic"] == topic]
     model = os.getenv("EMBEDDING_MODEL")
-    key = os.getenv("EMBEDDING_API_KEY") or os.getenv("LLM_API_KEY")
+    key = os.getenv("EMBEDDING_API_KEY") or os.getenv("LLM_API_KEY") or os.getenv("OPENAI_API_KEY")
     if model and key:
         base = os.getenv("EMBEDDING_BASE_URL") or os.getenv("LLM_BASE_URL", "https://api.openai.com/v1")
         qvec = _api_embedding(question, model, base, key)
-        return sorted(candidates, key=lambda x: (-_dense_cosine(qvec, _api_embedding(x["content"], model, base, key)), x["document_id"]))[:top_k]
+        return sorted(candidates, key=lambda x: (-_dense_cosine(qvec, _api_embedding(_embedding_document_text(x), model, base, key)), x["document_id"]))[:top_k]
     qvec = _vector(question)
     return sorted(candidates, key=lambda x: (-_cosine(qvec, _vector(x["content"] + " " + x["title"])), x["document_id"]))[:top_k]

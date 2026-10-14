@@ -1,6 +1,7 @@
 import copy
 import unittest
 from datetime import date
+from unittest.mock import patch
 
 from src.governance import can_read, current_versions
 from src.service import answer_question
@@ -8,6 +9,14 @@ from src.store import get_user, load_seed
 
 
 class KnowledgeGuardTests(unittest.TestCase):
+    def setUp(self):
+        config_patch = patch("src.service.load_config")
+        env_patch = patch.dict("os.environ", {"LLM_API_KEY": "", "OPENAI_API_KEY": "", "EMBEDDING_MODEL": ""})
+        config_patch.start()
+        env_patch.start()
+        self.addCleanup(config_patch.stop)
+        self.addCleanup(env_patch.stop)
+
     @classmethod
     def setUpClass(cls):
         cls.seed = load_seed()

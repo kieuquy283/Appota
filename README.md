@@ -4,7 +4,7 @@ Prototype chứng minh rằng cùng một câu hỏi có thể dùng nguồn ch�
 
 ## Trạng thái triển khai
 
-Backend CLI, bộ kiểm thử và giao diện hội thoại đa lượt (Multi-Turn Chat with Citations) trên Streamlit (`app.py`) đã hoàn thành theo kế hoạch [chatbot-ui-citation-plan.md](docs/chatbot-ui-citation-plan.md). Hệ thống hỗ trợ trích dẫn nguồn (citations), hiển thị trạng thái xử lý (`ANSWER`, `ABSTAIN`, `CONFLICT`), audit trace bảo mật và cách ly ngữ cảnh người dùng. Chưa deploy hoặc cấu hình provider LLM/embedding thật.
+Backend CLI, bộ kiểm thử và giao diện hội thoại đa lượt (Multi-Turn Chat with Citations) trên Streamlit (`app.py`) đã hoàn thành theo kế hoạch [chatbot-ui-citation-plan.md](docs/chatbot-ui-citation-plan.md). Hệ thống hỗ trợ trích dẫn nguồn (citations), hiển thị trạng thái xử lý (`ANSWER`, `ABSTAIN`, `CONFLICT`), audit trace bảo mật và cách ly ngữ cảnh người dùng. Cấu hình cục bộ dùng OpenRouter cho chat và embedding; chưa deploy.
 
 ## Luồng xử lý
 
@@ -40,12 +40,14 @@ UI chỉ gửi `user_id` và `question`; backend tự lấy company/department/r
 
 ## Tùy chọn provider
 
-Không có API key, backend chạy chế độ trả lời trích xuất offline và truy xuất bằng vector từ vựng; chế độ này phục vụ kiểm thử quy tắc, **chưa chứng minh chất lượng semantic retrieval hoặc LLM**. Muốn bật hosted semantic embedding và LLM, đặt biến môi trường theo `.env.example`:
+Ứng dụng đọc `.env` tại thư mục gốc khi xử lý câu hỏi. Cấu hình mẫu trong `.env.example` dùng OpenRouter: `google/gemma-4-31b-it` cho chat và `liquid/lfm-2.5-embedding-350m:free` cho embedding. Đặt key tại `LLM_API_KEY`; `EMBEDDING_API_KEY` có thể để trống để dùng cùng key. File `.env` cục bộ được Git bỏ qua. Không có key, backend dùng trả lời trích xuất và truy xuất từ vựng để kiểm thử quy tắc.
 
-- `EMBEDDING_API_KEY`, `EMBEDDING_MODEL`, `EMBEDDING_BASE_URL` cho endpoint embeddings tương thích OpenAI.
-- `LLM_API_KEY`, `LLM_MODEL`, `LLM_BASE_URL` cho chat completions tương thích OpenAI.
+`LLM_FALLBACK_MODELS` là danh sách model dự phòng, phân tách bằng dấu phẩy. Mẫu cấu hình thử `google/gemma-4-26b-a4b-it:free`, rồi `nvidia/nemotron-3-ultra-550b-a55b:free`: khi model chính lỗi mạng, bị giới hạn, hoặc trả JSON/trích dẫn không hợp lệ, backend thử model kế tiếp với cùng tập bằng chứng đã qua kiểm tra quyền. Nemotron nhận yêu cầu không có `response_format` vì endpoint không hỗ trợ tham số đó; backend vẫn kiểm tra JSON và trích dẫn. Trace ghi model đã dùng và các model đã thử. Nếu tất cả đều lỗi, ứng dụng báo lỗi; không tạo câu trả lời thiếu căn cứ. Model miễn phí cũng có thể bị giới hạn lượt gọi.
 
-Ứng dụng không tự đọc file `.env`; cấu hình biến môi trường tại shell/hosting. Không commit API key. Kết quả và chi phí provider phụ thuộc cấu hình, hiện chưa được kiểm thử.
+- `LLM_BASE_URL=https://openrouter.ai/api/v1` gọi `/chat/completions`.
+- `EMBEDDING_BASE_URL=https://openrouter.ai/api/v1` gọi `/embeddings`; văn bản đưa vào embedding được rút thành đoạn chính sách ngắn vì model có ngữ cảnh 512 token.
+
+`EMBEDDING_MODEL` để trống thì retrieval vẫn dùng từ khóa; chỉ bật LLM không mở rộng bộ nhận diện ý định hiện tại. Quyền truy cập và phiên bản tài liệu vẫn được lọc ở backend trước khi gọi API. Không commit API key. Kết quả phụ thuộc khả năng sẵn sàng của provider.
 
 ## Dữ liệu và ca đánh giá
 

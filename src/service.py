@@ -6,6 +6,7 @@ from uuid import uuid4
 
 from .governance import can_read, current_versions, is_applicable, resolve_authority
 from .citations import citation_from_chunk
+from .config import load_config
 from .llm import generate
 from .models import AnswerResult, Citation
 from .retrieval import detect_intent, retrieve
@@ -20,6 +21,7 @@ def answer_question(user_id: str, question: str, *, query_date: date | None = No
                     seed: dict | None = None) -> AnswerResult:
     if not question.strip():
         raise ValueError("Question must not be empty")
+    load_config()
     started = perf_counter()
     dataset = seed if seed is not None else load_seed()
     user = get_user(user_id, dataset)
